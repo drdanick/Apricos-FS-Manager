@@ -1,0 +1,14 @@
+# Mac files
+.DS_Store
+
+# Vim
+*.swp
+
+# CC
+a.out
+*.o
+*.s
+*.gch
+
+# Build directory (at least on my system)
+build/
