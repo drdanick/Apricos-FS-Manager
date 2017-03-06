@@ -1,4 +1,7 @@
 #ifndef APRICOSFSMAN_H
 #define APRICOSFSMAN_H
 
+#define INITIAL_INPUT_BUFFER_SIZE 256
+#define PROMPT "> "
+
 #endif /* APRICOSFSMAN_H */
