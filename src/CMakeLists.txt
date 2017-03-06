@@ -2,6 +2,7 @@ include (FindPkgConfig)
 
 set (apricosfsman
     main.c
+    commandproc.c
     )
 
 add_executable (${PROJECT_NAME} ${apricosfsman})
