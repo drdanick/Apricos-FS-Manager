@@ -3,6 +3,8 @@ include (FindPkgConfig)
 set (apricosfsman
     main.c
     commandproc.c
+    filesystem.c
+    diskio.c
     )
 
 add_executable (${PROJECT_NAME} ${apricosfsman})
