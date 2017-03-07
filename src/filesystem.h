@@ -1,6 +1,9 @@
 #ifndef FILESYSTEM_H
 #define FILESYSTEM_H
 
+#include <stdio.h>
+#include "diskio.h"
+
 /*
  * Constants
  */
@@ -22,10 +25,11 @@ typedef struct {
 
 typedef struct {
     char* diskImagePath;
-    char* diskData;
     char* spaceBitmap;
     char* volumeInformation;
-    FsPathUnit* pathStack;
+    char* diskData;
+    FsPathUnit pathStack[MAX_PATH_DEPTH];
+    int currentPathUnit;
 } Filesystem;
 
 
@@ -33,6 +37,7 @@ typedef struct {
  * Functions
  */
 
-Filesystem initFilesystem(char* filePath);
+Filesystem* mountFilesystem(char* filePath);
+void unmountFilesystem(Filesystem* fs, char save);
 
 #endif /* FILESYSTEM_H */
