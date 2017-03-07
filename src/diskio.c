@@ -4,6 +4,10 @@
 
 char* loadDataFromDiskFile(char* fileName) {
     FILE* diskFile = fopen(fileName, "rb");
+    
+    if(diskFile == NULL)
+        return NULL;
+    
     char* diskData = (char*)malloc(sizeof(char) * DISK_SIZE);
 
     if(!fgets(diskData, DISK_SIZE, diskFile)) {
