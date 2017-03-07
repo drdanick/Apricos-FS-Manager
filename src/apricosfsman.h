@@ -10,7 +10,7 @@
  * Globals
  */
 
-Filesystem* globalFileSystem;
+extern Filesystem* globalFileSystem;
 
 
 #endif /* APRICOSFSMAN_H */

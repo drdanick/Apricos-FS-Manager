@@ -7,6 +7,8 @@
 unsigned long buffersize = INITIAL_INPUT_BUFFER_SIZE;
 char* inputbuff;
 
+Filesystem* globalFileSystem = NULL;
+
 void cleanup() {
     /* free resources */
     free(inputbuff);
