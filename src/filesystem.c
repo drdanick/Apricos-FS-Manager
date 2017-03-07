@@ -1,4 +1,5 @@
 #include <stdlib.h>
+#include <string.h>
 #include "filesystem.h"
 #include "diskio.h"
 
@@ -6,7 +7,8 @@
 Filesystem* mountFilesystem(char* filePath) {
     Filesystem* fs = malloc(sizeof(Filesystem));
 
-    fs->diskImagePath = filePath;
+    fs->diskImagePath = malloc(sizeof(char) * strlen(filePath));
+    strcpy(fs->diskImagePath, filePath);
     fs->diskData = loadDataFromDiskFile(filePath);
 
     if(fs->diskData == NULL) {
@@ -27,5 +29,6 @@ Filesystem* mountFilesystem(char* filePath) {
 void unmountFilesystem(Filesystem* fs, char save) {
     if(save)
         saveDiskFile(fs->diskImagePath, fs->diskData);
+    free(fs->diskImagePath);
     free(fs);
 }
