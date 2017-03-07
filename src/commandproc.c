@@ -36,6 +36,16 @@ void mountCmd(char* args) {
     printf("mounted!\n");
 }
 
+void unmountCmd() {
+    if(globalFileSystem == NULL) {
+        printf("No FileSystem mounted!\n");
+        return;
+    }
+
+    unmountFilesystem(globalFileSystem, 1);
+    printf("unmounted!\n");
+}
+
 int processLine(char* line) {
     char* command;
     strToLower(line);
@@ -54,6 +64,9 @@ int processLine(char* line) {
     }
     else if(strcmp("mount", command) == 0) {
         mountCmd(strtok(NULL, " \n"));
+    }
+    else if(strcmp("unmount", command) == 0) {
+        unmountCmd();
     }
     else {
         printf("Unknown Command\n");
