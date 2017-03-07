@@ -1,5 +1,9 @@
 #include "filesystem.h"
 
 
-void init(char* filePath) {
+Filesystem initFilesystem(char* filePath) {
+    Filesystem fs;
+    filePath = filePath;
+
+    return fs;
 }

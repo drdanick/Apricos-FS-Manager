@@ -33,6 +33,6 @@ typedef struct {
  * Functions
  */
 
-void init(char* filePath);
+Filesystem initFilesystem(char* filePath);
 
 #endif /* FILESYSTEM_H */
