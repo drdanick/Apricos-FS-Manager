@@ -3,6 +3,8 @@
 #include <ctype.h>
 #include <unistd.h>
 #include "commandproc.h"
+#include "apricosfsman.h"
+#include "filesystem.h"
 
 char* strToLower(char* str) {
     int i = 0;
@@ -23,6 +25,16 @@ void printStatus() {
     printf("\n");
 }
 
+void mountCmd(char* args) {
+    Filesystem* fs = mountFilesystem(args);
+    if(fs == NULL) {
+        printf("Cannot load file \"%s\"\n", args);
+        return;
+    }
+
+    globalFileSystem = fs;
+}
+
 int processLine(char* line) {
     char* command;
     strToLower(line);
@@ -38,6 +50,9 @@ int processLine(char* line) {
     }
     else if(strcmp("status", command) == 0) {
         printStatus();
+    }
+    else if(strcmp("mount", command) == 0) {
+        mountCmd(strtok(NULL, " \n"));
     }
     else {
         printf("Unknown Command\n");
