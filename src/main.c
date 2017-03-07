@@ -23,7 +23,7 @@ void init(int argc, char** argv) {
     argc=argc; /* Satisfy compiler warnings until these are actually used */
     argv=argv;
 
-    signal(SIGINT, termhandler); 
+    signal(SIGINT, termhandler);
 
     inputbuff = (char*)malloc(sizeof(char) * buffersize);
 }
