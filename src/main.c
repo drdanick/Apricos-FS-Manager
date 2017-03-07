@@ -12,6 +12,11 @@ Filesystem* globalFileSystem = NULL;
 void cleanup() {
     /* free resources */
     free(inputbuff);
+
+    if(globalFileSystem != NULL) {
+        printf("Unmounting without saving...\n");
+        unmountFilesystem(globalFileSystem, 0);
+    }
 }
 
 void termhandler(int sig) {

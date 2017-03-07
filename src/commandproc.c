@@ -20,7 +20,8 @@ void printStatus() {
     getcwd(cwd, sizeof(cwd));
 
     printf("Program status:\n");
-    printf("\tWorking Directory: %s", cwd);
+    printf("\tWorking Directory: %s\n", cwd);
+    printf("\tDisk Image mounted: %s\n", globalFileSystem == NULL ? "None" : globalFileSystem->diskImagePath);
 
     printf("\n");
 }
@@ -55,6 +56,8 @@ int processLine(char* line) {
         printf("error parsing input!\n");
         return -1;
     }
+
+    /* Execute the command */
 
     if(strcmp("exit", command) == 0) {
         return -1;
