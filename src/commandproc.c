@@ -33,6 +33,7 @@ void mountCmd(char* args) {
     }
 
     globalFileSystem = fs;
+    printf("mounted!\n");
 }
 
 int processLine(char* line) {
