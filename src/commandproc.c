@@ -44,6 +44,7 @@ void unmountCmd() {
     }
 
     unmountFilesystem(globalFileSystem, 1);
+    globalFileSystem = NULL;
     printf("unmounted!\n");
 }
 
