@@ -25,7 +25,7 @@ void printStatus() {
     printf("\tDisk Image mounted: %s\n", globalFileSystem == NULL ? "None" : globalFileSystem->diskImagePath);
 
     if(globalFileSystem) {
-        char* volname = globalFileSystem->volumeInfo->volumeName;
+        char* volname = globalFileSystem->volumeInfo->data.volumeName;
         printf("\tVolume name: %s\n", strlen(volname) < 1 ? "[Unformatted]" : volname);
     }
 

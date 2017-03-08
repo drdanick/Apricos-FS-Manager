@@ -5,6 +5,8 @@
 
 #define MIN(a, b) ((a < b) ? a : b)
 
+#define BOOT_SIGNATURE_SIZE 2
+static const char bootSignature[] = {0xAA, 0x55};
 
 Filesystem* mountFilesystem(char* filePath) {
     Filesystem* fs = malloc(sizeof(Filesystem));
@@ -39,8 +41,14 @@ void formatFilesystem(Filesystem* fs, char* volumeName) {
     /* clear space bitmap */
     memset(fs->spaceBitmap, 0, SECTOR_SIZE);
 
+    /* clear volume information */
+    memset(fs->volumeInfo->data.raw, 0, SECTOR_SIZE);
+
     /* set volume name */
-    memcpy(fs->volumeInfo->volumeName, volumeName, MIN(strlen(volumeName), VOLUME_NAME_LENGTH));
+    memcpy(fs->volumeInfo->data.volumeName, volumeName, MIN(strlen(volumeName), VOLUME_NAME_LENGTH));
+
+    /* make volume bootable */
+    memcpy(&(fs->volumeInfo->data.raw[SECTOR_SIZE - BOOT_SIGNATURE_SIZE]), bootSignature, BOOT_SIGNATURE_SIZE);
 
     /* create the root directory */
     /* TODO */

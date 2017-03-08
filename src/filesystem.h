@@ -27,7 +27,10 @@ typedef struct {
 } FsPathUnit;
 
 typedef struct {
-    char volumeName[VOLUME_NAME_LENGTH];
+    union {
+        char volumeName[VOLUME_NAME_LENGTH];
+        char raw[SECTOR_SIZE];
+    } data;
 } VolumeInfo;
 
 typedef struct {
