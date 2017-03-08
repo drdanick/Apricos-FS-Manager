@@ -126,17 +126,18 @@ int processLine(char* line) {
     }
     else if(strcmp("format", command) == 0) {
         char* volnamearg = strtok(NULL, "\n");
-
-        if(volnamearg == NULL) {
-            printf("Missing volume name\n");
-        } else if(strlen(volnamearg) > VOLUME_NAME_LENGTH) {
-            printf("Given name exceeds maximum length of %d\n", VOLUME_NAME_LENGTH);
-        } else if(globalFileSystem) {
-            printf("Formatting... ");
-            formatFilesystem(globalFileSystem, volnamearg);
-            printf("Done!\n");
-        } else {
+        if(!globalFileSystem) {
             printf("No FileSystem mounted\n");
+        } else {
+            if(volnamearg == NULL) {
+                printf("Missing volume name\n");
+            } else if(strlen(volnamearg) > VOLUME_NAME_LENGTH) {
+                printf("Given name exceeds maximum length of %d\n", VOLUME_NAME_LENGTH);
+            } else if(globalFileSystem) {
+                printf("Formatting... ");
+                formatFilesystem(globalFileSystem, volnamearg);
+                printf("Done!\n");
+            }
         }
     }
     else {
