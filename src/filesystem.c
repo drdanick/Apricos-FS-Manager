@@ -22,6 +22,7 @@ Filesystem* mountFilesystem(char* filePath) {
 
     fs->spaceBitmap = getSegmentData(fs->diskData, 0, SPACE_BITMAP_SEGMENT);
     fs->volumeInfo = (VolumeInfo*)getSegmentData(fs->diskData, 0, VOLUME_INFORMATION_SEGMENT);
+    fs->rawVolumeInfo = getSegmentData(fs->diskData, 0, VOLUME_INFORMATION_SEGMENT);
 
     fs->currentPathUnit = -1;
 
@@ -42,13 +43,13 @@ void formatFilesystem(Filesystem* fs, char* volumeName) {
     memset(fs->spaceBitmap, 0, SECTOR_SIZE);
 
     /* clear volume information */
-    memset(fs->volumeInfo->data.raw, 0, SECTOR_SIZE);
+    memset(fs->rawVolumeInfo, 0, SECTOR_SIZE);
 
     /* set volume name */
-    memcpy(fs->volumeInfo->data.volumeName, volumeName, MIN(strlen(volumeName), VOLUME_NAME_LENGTH));
+    memcpy(fs->volumeInfo->volumeName, volumeName, MIN(strlen(volumeName), VOLUME_NAME_LENGTH));
 
     /* make volume bootable */
-    memcpy(&(fs->volumeInfo->data.raw[SECTOR_SIZE - BOOT_SIGNATURE_SIZE]), bootSignature, BOOT_SIGNATURE_SIZE);
+    memcpy(&(fs->rawVolumeInfo[SECTOR_SIZE - BOOT_SIGNATURE_SIZE]), bootSignature, BOOT_SIGNATURE_SIZE);
 
     /* create the root directory */
     /* TODO */

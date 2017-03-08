@@ -27,16 +27,14 @@ typedef struct {
 } FsPathUnit;
 
 typedef struct {
-    union {
-        char volumeName[VOLUME_NAME_LENGTH];
-        char raw[SECTOR_SIZE];
-    } data;
+    char volumeName[VOLUME_NAME_LENGTH];
 } VolumeInfo;
 
 typedef struct {
     char* diskImagePath;
     char* spaceBitmap;
     VolumeInfo* volumeInfo;
+    char* rawVolumeInfo;
     char* diskData;
     FsPathUnit pathStack[MAX_PATH_DEPTH];
     int currentPathUnit;
