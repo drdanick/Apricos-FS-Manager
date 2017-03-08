@@ -20,8 +20,8 @@ Filesystem* mountFilesystem(char* filePath) {
         return NULL;
     }
 
-    fs->spaceBitmap = getSegmentData(fs->diskData, 0, 62);
-    fs->volumeInfo = (VolumeInfo*)getSegmentData(fs->diskData, 0, 63);
+    fs->spaceBitmap = getSegmentData(fs->diskData, 0, SPACE_BITMAP_SEGMENT);
+    fs->volumeInfo = (VolumeInfo*)getSegmentData(fs->diskData, 0, VOLUME_INFORMATION_SEGMENT);
 
     fs->currentPathUnit = -1;
 
