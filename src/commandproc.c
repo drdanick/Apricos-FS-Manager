@@ -5,6 +5,7 @@
 #include "commandproc.h"
 #include "apricosfsman.h"
 #include "filesystem.h"
+#include "memdumper.h"
 
 char* strToLower(char* str) {
     int i = 0;
@@ -48,9 +49,34 @@ void unmountCmd() {
     printf("unmounted!\n");
 }
 
-void peekCommand(long long address, long count) {
-    /* TODO */
-    printf("Will peek %ld bytes @ address %lld\n", count, address);
+void peekCmd(unsigned int track, unsigned int sector) {
+    char* peekData;
+    char* peekEnd;
+
+    if(globalFileSystem == NULL) {
+        printf("No FileSystem mounted\n");
+        return;
+    }
+
+    peekData = getSegmentData(globalFileSystem->diskData, track, sector);
+    peekEnd = &peekData[SECTOR_SIZE];
+
+    do {
+        int i = 0;
+        char* asciiData = peekData;
+        printf("%03u  ", SECTOR_SIZE - (int)(peekEnd-peekData));
+
+        for( ; i < PEEK_COLUMNS_PER_LINE; i++) {
+            dumpMemoryAsHex(peekData, peekEnd, PEEK_BYTES_PER_COLUMN);
+
+            peekData += PEEK_BYTES_PER_COLUMN;
+            printf("  ");
+        }
+        printf("[");
+        dumpMemoryAsASCII(asciiData, peekEnd, PEEK_BYTES_PER_COLUMN * PEEK_COLUMNS_PER_LINE);
+        printf("]\n");
+    } while(peekData < peekEnd);
+
 }
 
 int processLine(char* line) {

@@ -5,6 +5,7 @@ set (apricosfsman
     commandproc.c
     filesystem.c
     diskio.c
+    memdumper.c
     )
 
 add_executable (${PROJECT_NAME} ${apricosfsman})
