@@ -6,38 +6,6 @@
 #include "apricosfsman.h"
 #include "filesystem.h"
 
-unsigned int HEX_TO_DEC[] = {
-    0, 1, 2, 3,
-    4, 5, 6, 7,
-    8, 9, 0, 0,
-    0, 0, 0, 0,
-    0, 0x0A, 0x0B, 0x0C,
-    0x0D, 0x0E, 0x0F
-};
-
-long long hexToDec(char* hexstr) {
-    long long output = 0;
-    unsigned int length = strlen(hexstr);
-
-    while(length > 0) {
-        if((int)(hexstr[length - 1] - '0') > 22)
-            return -1;
-        output <<= 4;
-        output |= HEX_TO_DEC[(int)(hexstr[--length] - '0')];
-
-    }
-
-    return output;
-}
-
-char* strToUpper(char* str) {
-    int i = 0;
-    for( ; str[i] != '\0'; i++)
-        str[i] = toupper(str[i]);
-
-    return str;
-}
-
 char* strToLower(char* str) {
     int i = 0;
     for( ; str[i] != '\0'; i++)
@@ -110,22 +78,19 @@ int processLine(char* line) {
         unmountCmd();
     }
     else if(strcmp("peek", command) == 0) {
-        static char hexbuff[32];
         char* peekarg;
-        long long hexAddress;
-        unsigned long count;
+        unsigned int track;
+        unsigned int sector;
 
         peekarg = strtok(NULL, "\n");
 
-        if(peekarg == NULL || sscanf(peekarg, "%s %ld", hexbuff, &count) < 2) {
+        if(peekarg == NULL || sscanf(peekarg, "%u %u", &track, &sector) < 2) {
             printf("Argument size missmatch!\n");
         } else {
-            hexAddress = hexToDec(strToUpper(hexbuff));
-
-            if(hexAddress != -1) {
-                peekCommand(hexAddress, count);
+            if(track >= TRACKS || sector >= SECTORS_PER_TRACK) {
+                printf("Invalid track/sector number\n");
             } else {
-                printf("Invalid address!\n");
+                peekCmd(track, sector);
             }
         }
     }
