@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <signal.h>
+#include <string.h>
 #include "apricosfsman.h"
 #include "commandproc.h"
 
@@ -35,9 +36,17 @@ void init(int argc, char** argv) {
     inputbuff = (char*)malloc(sizeof(char) * buffersize);
 }
 
+void printPrompt() {
+    if(globalFileSystem) {
+        char* volname = globalFileSystem->volumeInfo->volumeName;
+        printf("[%s]", strlen(volname) < 1 ? "Unformatted" : volname);
+    }
+    printf(PROMPT);
+}
+
 void inputLoop() {
     do {
-        printf(PROMPT);
+        printPrompt();
     } while(
             getline(&inputbuff, &buffersize, stdin) != -1
             && processLine(inputbuff) != -1);
