@@ -14,7 +14,7 @@ void byteToHex(char byte, char* output) {
 }
 
 void dumpMemoryAsHex(char* data, char* dataEnd, int count) {
-    static char hexbuff[2];
+    static char hexbuff[3] = {0, 0, 0};
     int i = 0;
     while(i < count) {
         if(&data[i] >= dataEnd)
