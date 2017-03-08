@@ -10,7 +10,8 @@ char* loadDataFromDiskFile(char* fileName) {
     
     char* diskData = (char*)malloc(sizeof(char) * DISK_SIZE);
 
-    if(!fgets(diskData, DISK_SIZE, diskFile)) {
+    /* TODO: Return null if bytes read is less than expected*/
+    if(!fread(diskData, sizeof(char), DISK_SIZE, diskFile)){
         if(diskFile)
             fclose(diskFile);
         free(diskData);
