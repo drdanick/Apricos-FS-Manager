@@ -14,6 +14,9 @@
 #define VOLUME_INFORMATION_SEGMENT 62
 #define SPACE_BITMAP_SEGMENT 63
 
+/* Volume info constants */
+#define VOLUME_NAME_LENGTH 8
+
 /*
  * Data structures
  */
@@ -24,7 +27,7 @@ typedef struct {
 } FsPathUnit;
 
 typedef struct {
-    char volumeName[8];
+    char volumeName[VOLUME_NAME_LENGTH];
 } VolumeInfo;
 
 typedef struct {
@@ -43,5 +46,6 @@ typedef struct {
 
 Filesystem* mountFilesystem(char* filePath);
 void unmountFilesystem(Filesystem* fs, char save);
+void formatFilesystem(Filesystem* fs, char* volumeName);
 
 #endif /* FILESYSTEM_H */

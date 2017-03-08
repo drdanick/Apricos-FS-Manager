@@ -3,6 +3,8 @@
 #include "filesystem.h"
 #include "diskio.h"
 
+#define MIN(a, b) ((a < b) ? a : b)
+
 
 Filesystem* mountFilesystem(char* filePath) {
     Filesystem* fs = malloc(sizeof(Filesystem));
@@ -31,4 +33,16 @@ void unmountFilesystem(Filesystem* fs, char save) {
         saveDiskFile(fs->diskImagePath, fs->diskData);
     free(fs->diskImagePath);
     free(fs);
+}
+
+void formatFilesystem(Filesystem* fs, char* volumeName) {
+    /* clear space bitmap */
+    memset(fs->spaceBitmap, 0, SECTOR_SIZE);
+
+    /* set volume name */
+    memcpy(fs->volumeInfo->volumeName, volumeName, MIN(strlen(volumeName), VOLUME_NAME_LENGTH));
+
+    /* create the root directory */
+    /* TODO */
+
 }
