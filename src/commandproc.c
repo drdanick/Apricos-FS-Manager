@@ -85,8 +85,7 @@ int processLine(char* line) {
     command = strtok(line, " \n");
 
     if(command == NULL) {
-        printf("error parsing input!\n");
-        return -1;
+        command = "";
     }
 
     /* Execute the command */
