@@ -34,6 +34,7 @@ Filesystem* mountFilesystem(char* filePath) {
 void unmountFilesystem(Filesystem* fs, char save) {
     if(save)
         saveDiskFile(fs->diskImagePath, fs->diskData);
+    freeDiskData(fs->diskData);
     free(fs->diskImagePath);
     free(fs);
 }
