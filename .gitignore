@@ -12,3 +12,6 @@ a.out
 
 # Build directory (at least on my system)
 build/
+
+# Ignore compile commands (used with YCM)
+compile_commands.json
