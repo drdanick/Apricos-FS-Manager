@@ -18,9 +18,7 @@ long long findFreeMemoryBlocks(Filesystem* fs, int count, unsigned int* outBlock
         freeBlocks = 0;
 
         for( ; i > 0; i--) {
-            printf("testing block %lld\n", searchStart);
             if(isBlockFree(fs, searchStart)) {
-                printf("found free block: %lld\n", searchStart);
                 if(++freeBlocks >= count) {
                     break;
                 } else {
