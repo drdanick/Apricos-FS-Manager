@@ -11,7 +11,7 @@ static const char bootSignature[] = {0xAA, 0x55};
 Filesystem* mountFilesystem(char* filePath) {
     Filesystem* fs = malloc(sizeof(Filesystem));
 
-    fs->diskImagePath = malloc(sizeof(char) * strlen(filePath));
+    fs->diskImagePath = malloc(sizeof(char) * strlen(filePath) + 1);
     strcpy(fs->diskImagePath, filePath);
     fs->diskData = loadDataFromDiskFile(filePath);
 
