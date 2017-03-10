@@ -2,6 +2,18 @@
 #include "allocator.h"
 #include "diskio.h"
 
+long long autoAllocateBlock(Filesystem* fs) {
+    long long freeBlock = findNextFreeBlock(fs, 0);
+
+    if(freeBlock == -1)
+        return -1;
+
+    if(!allocateBlock(fs, freeBlock))
+        return -1;
+
+    return freeBlock;
+}
+
 int autoAllocateBlocks(Filesystem* fs, unsigned int blockCount, unsigned int* outBlocks) {
     long long searchStart = 0;
     unsigned int allocated = 0;
