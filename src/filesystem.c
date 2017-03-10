@@ -94,7 +94,7 @@ int createDirectoryAtBlock(Filesystem* fs, char* name, unsigned int blockNum) {
     memset(dirMetadataSector, '\0', SECTOR_SIZE);
 
     /* copy the dir name into the dir metadata segment, starting at offset 2 */
-    memcpy(&dirMetadataSector[2], name, MIN(MAX_DIR_ENTRY_NAME_LENGTH, strlen(name)));
+    memcpy(&dirMetadataSector[DIR_ENTRY_NAME_OFFSET], name, MIN(MAX_DIR_ENTRY_NAME_LENGTH, strlen(name)));
 
     return 1;
 }
