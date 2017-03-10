@@ -6,6 +6,8 @@
 #include "apricosfsman.h"
 #include "filesystem.h"
 #include "memdumper.h"
+#include "allocator.h"
+#include "diskio.h"
 
 char* strToLower(char* str) {
     int i = 0;
@@ -63,7 +65,7 @@ void peekCmd(unsigned int track, unsigned int sector) {
         return;
     }
 
-    peekData = getSegmentData(globalFileSystem->diskData, track, sector);
+    peekData = getSectorData(globalFileSystem->diskData, track, sector);
     peekEnd = &peekData[SECTOR_SIZE];
 
     do {

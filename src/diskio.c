@@ -1,13 +1,14 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include "diskio.h"
+#include "allocator.h"
 
 char* loadDataFromDiskFile(char* fileName) {
     FILE* diskFile = fopen(fileName, "rb");
-    
+
     if(diskFile == NULL)
         return NULL;
-    
+
     char* diskData = (char*)malloc(sizeof(char) * DISK_SIZE);
 
     /* TODO: Return null if bytes read is less than expected*/
@@ -41,7 +42,7 @@ void freeDiskData(char* diskData) {
     free(diskData);
 }
 
-char* getSegmentData(char* data, int tracknum, int sectornum) {
+char* getSectorData(char* data, int tracknum, int sectornum) {
     return &data[
         ((tracknum & TRACK_ID_MASK) * TRACK_SIZE) +
         ((sectornum & SECTOR_ID_MASK) * SECTOR_SIZE)

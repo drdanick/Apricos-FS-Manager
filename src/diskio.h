@@ -60,6 +60,18 @@ void freeDiskData(char* diskData);
  * Returns: A pointer to the requested segment within the cache.
  * Note that no data is copied.
  */
-char* getSegmentData(char* data, int tracknum, int sectornum);
+char* getSectorData(char* data, int tracknum, int sectornum);
+
+/**
+ * Given cached disk data and a block number, retrieve a pointer to a
+ * specific disk sector.
+ *
+ * data:      A pointer to the disk data cache.
+ * blockNum:  The block number to load.
+ *
+ * Returns: A pointer to the requested segment within the cache.
+ * Note that no data is copied.
+ */
+char* getBlockData(char* data, int blockNum);
 
 #endif /* DISKIO_H */

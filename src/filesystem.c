@@ -2,6 +2,7 @@
 #include <string.h>
 #include "filesystem.h"
 #include "diskio.h"
+#include "allocator.h"
 
 #define MIN(a, b) ((a < b) ? a : b)
 
@@ -20,9 +21,9 @@ Filesystem* mountFilesystem(char* filePath) {
         return NULL;
     }
 
-    fs->spaceBitmap = getSegmentData(fs->diskData, 0, SPACE_BITMAP_SEGMENT);
-    fs->volumeInfo = (VolumeInfo*)getSegmentData(fs->diskData, 0, VOLUME_INFORMATION_SEGMENT);
-    fs->rawVolumeInfo = getSegmentData(fs->diskData, 0, VOLUME_INFORMATION_SEGMENT);
+    fs->spaceBitmap = getSectorData(fs->diskData, 0, SPACE_BITMAP_SEGMENT);
+    fs->volumeInfo = (VolumeInfo*)getSectorData(fs->diskData, 0, VOLUME_INFORMATION_SEGMENT);
+    fs->rawVolumeInfo = getSectorData(fs->diskData, 0, VOLUME_INFORMATION_SEGMENT);
 
     fs->currentPathUnit = -1;
 
