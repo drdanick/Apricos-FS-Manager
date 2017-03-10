@@ -28,7 +28,7 @@ int autoAllocateBlocks(Filesystem* fs, unsigned int blockCount, unsigned int* ou
             return 0;
         }
     }
-    
+
     return 1;
 }
 
