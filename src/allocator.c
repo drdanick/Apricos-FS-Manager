@@ -2,6 +2,73 @@
 #include "allocator.h"
 #include "diskio.h"
 
+int autoAllocateBlocks(Filesystem* fs, unsigned int blockCount, unsigned int* outBlocks) {
+    if(findFreeMemoryBlocks(fs, blockCount, outBlocks) == -1) {
+        return 0;
+    }
+
+    return allocateBlocks(fs, outBlocks, blockCount);
+}
+
+int allocateBlocks(Filesystem* fs, unsigned int* blockNums, unsigned int count) {
+    unsigned int i = 0;
+
+    for( ; i < count; i++) {
+        if(!allocateBlock(fs, blockNums[i])) {
+            freeBlocks(fs, blockNums, i); /* Free previously allocated blocks */
+            return 0;
+        }
+    }
+
+    return 1;
+}
+
+int allocateSector(Filesystem* fs, char trackNum, char sectorNum) {
+    return allocateBlock(fs, TRACK_AND_SECTOR_TO_BLOCK(trackNum, sectorNum));
+}
+
+int allocateBlock(Filesystem* fs, unsigned int blockNum) {
+    long bitmapByteNumber = blockNum / 8;
+    long bitmapByteOffset = blockNum % 8;
+
+    if(blockNum < SECTORS && isBlockFree(fs, blockNum)) {
+        fs->spaceBitmap[bitmapByteNumber] |= (0x01 << bitmapByteOffset);
+        return 1;
+    }
+
+    return 0;
+}
+
+int freeBlocks(Filesystem* fs, unsigned int* blockNums, unsigned int count) {
+    unsigned int i = 0;
+
+    for( ; i < count; i++) {
+        if(!freeBlock(fs, blockNums[i])) {
+            allocateBlocks(fs, blockNums, i); /* Allocate previously freed blocks */
+            return 0;
+        }
+    }
+
+    return 1;
+}
+
+int freeSector(Filesystem* fs, char trackNum, char sectorNum) {
+    return freeBlock(fs, TRACK_AND_SECTOR_TO_BLOCK(trackNum, sectorNum));
+}
+
+int freeBlock(Filesystem* fs, unsigned int blockNum) {
+    long bitmapByteNumber = blockNum / 8;
+    long bitmapByteOffset = blockNum % 8;
+
+    if(blockNum < SECTORS) {
+        fs->spaceBitmap[bitmapByteNumber] &= ~(0x01 << bitmapByteOffset);
+        return 1;
+    }
+
+    return 0;
+}
+
+
 long long findFreeMemoryBlocks(Filesystem* fs, int count, unsigned int* outBlocks) {
     long long searchStart;
     int freeBlocks;
@@ -47,7 +114,7 @@ long long findFreeMemoryBlocks(Filesystem* fs, int count, unsigned int* outBlock
         outBlocks--;
     }
 
-    return searchStart;
+    return searchStart + 1;
 }
 
 long long findNextFreeBlock(Filesystem* fs, unsigned int start) {
