@@ -48,3 +48,7 @@ char* getSectorData(char* data, int tracknum, int sectornum) {
         ((sectornum & SECTOR_ID_MASK) * SECTOR_SIZE)
     ];
 }
+
+char* getBlockData(char* data, int blockNum) {
+    return getSectorData(data, BLOCK_TO_TRACK(blockNum), BLOCK_TO_SECTOR(blockNum));
+}
