@@ -60,18 +60,6 @@ void formatFilesystem(Filesystem* fs, char* volumeName) {
 
     /* create the root directory */
     createDirectory(fs, "ROOT");
-
-    /* find first free block of 8 sectors */
-    {
-        int i;
-        unsigned int freeBlocks[8];
-        findFreeMemoryBlocks(fs, 8, freeBlocks);
-        printf("free blocks:\n");
-        for(i = 0; i < 8; i++ ) {
-            unsigned int block = freeBlocks[i];
-            printf("block: %d, track: %d, sector: %d\n", block, BLOCK_TO_TRACK(block), BLOCK_TO_SECTOR(block));
-        }
-    }
 }
 
 long long createDirectory(Filesystem* fs, char* name) {
