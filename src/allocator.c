@@ -3,6 +3,24 @@
 #include "diskio.h"
 
 int autoAllocateBlocks(Filesystem* fs, unsigned int blockCount, unsigned int* outBlocks) {
+    long long searchStart = 0;
+    unsigned int allocated = 0;
+
+    for( ; blockCount > 0; blockCount--) {
+        searchStart = findNextFreeBlock(fs, searchStart);
+
+        if(searchStart != -1 && allocateBlock(fs, searchStart)) {
+            outBlocks[allocated++] = searchStart;
+        } else {
+            freeBlocks(fs, outBlocks, allocated);
+            return 0;
+        }
+    }
+    
+    return 1;
+}
+
+int autoAllocateContiguousBlocks(Filesystem* fs, unsigned int blockCount, unsigned int* outBlocks) {
     if(findFreeMemoryBlocks(fs, blockCount, outBlocks) == -1) {
         return 0;
     }

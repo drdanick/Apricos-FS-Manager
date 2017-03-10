@@ -9,6 +9,7 @@
 #define TRACK_AND_SECTOR_TO_BLOCK(track, sector) (track * SECTORS_PER_TRACK + sector)
 
 int autoAllocateBlocks(Filesystem* fs, unsigned int blockCount, unsigned int* outBlocks);
+int autoAllocateContiguousBlocks(Filesystem* fs, unsigned int blockCount, unsigned int* outBlocks);
 int allocateBlocks(Filesystem* fs, unsigned int* blockNums, unsigned int count);
 int allocateSector(Filesystem* fs, char trackNum, char sectorNum);
 int allocateBlock(Filesystem* fs, unsigned int blockNum);
