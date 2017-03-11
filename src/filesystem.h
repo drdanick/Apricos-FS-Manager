@@ -60,12 +60,5 @@ Filesystem* mountFilesystem(char* filePath);
 void unmountFilesystem(Filesystem* fs, char save);
 void formatFilesystem(Filesystem* fs, char* volumeName);
 
-/*
- * Filesystem structure functions
- */
-
-long long createDirectory(Filesystem* fs, char* name);
-int createDirectoryAtBlock(Filesystem* fs, char* name, unsigned int blockNum);
-
 
 #endif /* FILESYSTEM_H */

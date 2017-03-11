@@ -7,6 +7,7 @@ set (apricosfsman
     diskio.c
     memdumper.c
     allocator.c
+    fsdirectory.c
     )
 
 add_executable (${PROJECT_NAME} ${apricosfsman})
