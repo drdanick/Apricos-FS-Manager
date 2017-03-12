@@ -35,7 +35,7 @@
 typedef struct {
     char* name;
     unsigned int block;
-} FsPathUnit;
+} FsDirectory;
 
 typedef struct {
     char volumeName[VOLUME_NAME_LENGTH];
@@ -47,7 +47,7 @@ typedef struct {
     VolumeInfo* volumeInfo;
     char* rawVolumeInfo;
     char* diskData;
-    FsPathUnit pathStack[MAX_PATH_DEPTH];
+    FsDirectory pathStack[MAX_PATH_DEPTH];
     int currentPathUnit;
 } Filesystem;
 
