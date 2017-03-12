@@ -16,6 +16,8 @@
 
 /* Volume info constants */
 #define VOLUME_NAME_LENGTH 8
+#define ROOT_FOLDER_TRACK  1
+#define ROOT_FOLDER_SECTOR 0
 
 /* Directory entry masks */
 #define VALID_DIR_ENTRY_MASK   0x80

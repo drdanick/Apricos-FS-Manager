@@ -25,9 +25,10 @@ Filesystem* mountFilesystem(char* filePath) {
     fs->volumeInfo = (VolumeInfo*)getSectorData(fs->diskData, 0, VOLUME_INFORMATION_SEGMENT);
     fs->rawVolumeInfo = getSectorData(fs->diskData, 0, VOLUME_INFORMATION_SEGMENT);
 
-    fs->currentPathUnit = -1;
+    fs->currentPathUnit = 0;
 
-    /* TODO: Attempt to mount the root of the disk as a folder */
+    /* open and push the root directory */
+    pushDirectoryToStack(fs, openBlockAsDirectory(fs, TRACK_AND_SECTOR_TO_BLOCK(ROOT_FOLDER_TRACK, ROOT_FOLDER_SECTOR)));
 
     return fs;
 }
@@ -69,3 +70,4 @@ void formatFilesystem(Filesystem* fs, char* volumeName) {
     /* create the root directory */
     createDirectory(fs, "ROOT");
 }
+
