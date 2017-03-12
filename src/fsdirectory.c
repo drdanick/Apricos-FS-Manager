@@ -31,11 +31,36 @@ int createDirectoryAtBlock(Filesystem* fs, char* name, unsigned int blockNum) {
     return 1;
 }
 
+int pushDirectoryToStack(Filesystem* fs, FsDirectory dir) {
+    if(fs->currentPathUnit < MAX_PATH_DEPTH) {
+        fs->pathStack[fs->currentPathUnit] = dir;
+        fs->currentPathUnit++;
+
+        return 1;
+    }
+
+    return -1;
+}
+
+FsDirectory popDirectoryFromStack(Filesystem* fs) {
+    FsDirectory directory;
+
+    if(fs->currentPathUnit <= 0) {
+        directory.name = NULL;
+        directory.blockData = NULL;
+    } else {
+        directory = fs->pathStack[fs->currentPathUnit--];
+    }
+
+    return directory;
+}
+
 FsDirectory openBlockAsDirectory(Filesystem* fs, unsigned int blockNum) {
     FsDirectory directory;
 
     if(isBlockFree(fs, blockNum)) {
         directory.name = NULL;
+        directory.blockData = NULL;
     } else {
         char* dirMetadataSector = getBlockData(fs->diskData, blockNum);
         directory.name = (char*)malloc(sizeof(char) * MAX_DIR_ENTRY_NAME_LENGTH + 1);
