@@ -35,9 +35,17 @@ Filesystem* mountFilesystem(char* filePath) {
 void unmountFilesystem(Filesystem* fs, char save) {
     if(save)
         saveDiskFile(fs->diskImagePath, fs->diskData);
+    clearDirectoryStack(fs);
     freeDiskData(fs->diskData);
     free(fs->diskImagePath);
     free(fs);
+}
+
+void clearDirectoryStack(Filesystem* fs) {
+    int i = fs->currentPathUnit - 1;
+    while(i >= 0) {
+        closeDirectory(fs->pathStack[i--]);
+    }
 }
 
 void formatFilesystem(Filesystem* fs, char* volumeName) {
@@ -61,4 +69,3 @@ void formatFilesystem(Filesystem* fs, char* volumeName) {
     /* create the root directory */
     createDirectory(fs, "ROOT");
 }
-

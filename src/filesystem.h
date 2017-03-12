@@ -35,6 +35,7 @@
 typedef struct {
     char* name;
     unsigned int block;
+    char* blockData;
 } FsDirectory;
 
 typedef struct {
@@ -48,7 +49,7 @@ typedef struct {
     char* rawVolumeInfo;
     char* diskData;
     FsDirectory pathStack[MAX_PATH_DEPTH];
-    int currentPathUnit;
+    int currentPathUnit; /* Always points to the next free slot */
 } Filesystem;
 
 
@@ -58,6 +59,7 @@ typedef struct {
 
 Filesystem* mountFilesystem(char* filePath);
 void unmountFilesystem(Filesystem* fs, char save);
+void clearDirectoryStack(Filesystem* fs);
 void formatFilesystem(Filesystem* fs, char* volumeName);
 
 
