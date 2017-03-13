@@ -34,10 +34,19 @@
  * Data structures
  */
 
+/* NOTE: This maps directly to a pre-existing memory structure, 
+ * so care should be taken not to change the structs byte alignment. */
+typedef struct {
+    unsigned int trackNum: 8;
+    unsigned int segmentNum: 8;
+    char name[6];
+} FsDirectoryEntry;
+
 typedef struct {
     char* name;
     unsigned int block;
-    char* blockData;
+    char* rawData;
+    FsDirectoryEntry* dirEntries;
 } FsDirectory;
 
 typedef struct {
