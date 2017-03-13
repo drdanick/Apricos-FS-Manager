@@ -27,7 +27,6 @@
 
 /* Directory entry constants */
 #define MAX_DIR_ENTRY_NAME_LENGTH 6
-#define DIR_ENTRY_NAME_OFFSET     2
 
 
 /*

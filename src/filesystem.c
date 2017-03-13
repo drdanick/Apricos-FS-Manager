@@ -28,7 +28,7 @@ Filesystem* mountFilesystem(char* filePath) {
     fs->currentPathUnit = 0;
 
     /* open and push the root directory */
-    pushDirectoryToStack(fs, openBlockAsDirectory(fs, TRACK_AND_SECTOR_TO_BLOCK(ROOT_FOLDER_TRACK, ROOT_FOLDER_SECTOR)));
+    pushDirectoryToStack(fs, openBlockAsDirectory(fs, TRACK_AND_SECTOR_TO_BLOCK(ROOT_FOLDER_TRACK, ROOT_FOLDER_SECTOR), ""));
 
     return fs;
 }
@@ -43,10 +43,7 @@ void unmountFilesystem(Filesystem* fs, char save) {
 }
 
 void clearDirectoryStack(Filesystem* fs) {
-    int i = fs->currentPathUnit - 1;
-    while(i >= 0) {
-        closeDirectory(fs->pathStack[i--]);
-    }
+    fs->currentPathUnit = 0;
 }
 
 void formatFilesystem(Filesystem* fs, char* volumeName) {
@@ -68,6 +65,5 @@ void formatFilesystem(Filesystem* fs, char* volumeName) {
     autoAllocateBlocks(fs, SECTORS_PER_TRACK, allocatedBlocks);
 
     /* create the root directory */
-    createDirectory(fs, "ROOT");
+    createDirectory(fs);
 }
-

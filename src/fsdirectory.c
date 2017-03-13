@@ -6,27 +6,24 @@
 #include "allocator.h"
 #include "filesystem.h"
 
-long long createDirectory(Filesystem* fs, char* name) {
+long long createDirectory(Filesystem* fs) {
     /* Allocate the block */
     long long directoryBlock = findNextFreeBlock(fs, 0);
 
-    if(directoryBlock != -1 && createDirectoryAtBlock(fs, name, directoryBlock)) {
+    if(directoryBlock != -1 && createDirectoryAtBlock(fs, directoryBlock)) {
         return directoryBlock;
     }
 
     return -1;
 }
 
-int createDirectoryAtBlock(Filesystem* fs, char* name, unsigned int blockNum) {
+int createDirectoryAtBlock(Filesystem* fs, unsigned int blockNum) {
     char* dirMetadataSector;
     if(!allocateBlock(fs, blockNum))
         return 0;
 
     dirMetadataSector = getBlockData(fs->diskData, blockNum);
     memset(dirMetadataSector, '\0', SECTOR_SIZE);
-
-    /* copy the dir name into the dir metadata segment, starting at offset 2 */
-    memcpy(&dirMetadataSector[DIR_ENTRY_NAME_OFFSET], name, MIN(MAX_DIR_ENTRY_NAME_LENGTH, strlen(name)));
 
     return 1;
 }
@@ -47,7 +44,8 @@ FsDirectory popDirectoryFromStack(Filesystem* fs) {
 
     if(fs->currentPathUnit <= 0) {
         directory.name = NULL;
-        directory.blockData = NULL;
+        directory.rawData = NULL;
+        directory.dirEntries = NULL;
     } else {
         directory = fs->pathStack[fs->currentPathUnit--];
     }
@@ -55,27 +53,22 @@ FsDirectory popDirectoryFromStack(Filesystem* fs) {
     return directory;
 }
 
-FsDirectory openBlockAsDirectory(Filesystem* fs, unsigned int blockNum) {
+FsDirectory openBlockAsDirectory(Filesystem* fs, unsigned int blockNum, char* dirName) {
     FsDirectory directory;
+    directory.name = NULL;
 
     if(isBlockFree(fs, blockNum)) {
         directory.name = NULL;
-        directory.blockData = NULL;
+        directory.rawData = NULL;
+        directory.dirEntries = NULL;
     } else {
         char* dirMetadataSector = getBlockData(fs->diskData, blockNum);
-        directory.name = (char*)malloc(sizeof(char) * MAX_DIR_ENTRY_NAME_LENGTH + 1);
 
-        /* Set the directory name */
-        memcpy(&dirMetadataSector[DIR_ENTRY_NAME_OFFSET], directory.name, MAX_DIR_ENTRY_NAME_LENGTH);
-        directory.name[MAX_DIR_ENTRY_NAME_LENGTH] = '\0';
-
+        directory.name = dirName;
         directory.block = blockNum;
-        directory.blockData = dirMetadataSector;
+        directory.rawData = dirMetadataSector;
+        directory.dirEntries = (FsDirectoryEntry*) dirMetadataSector;
     }
 
     return directory;
-}
-
-void closeDirectory(FsDirectory dir) {
-    free(dir.name);
 }

@@ -3,11 +3,10 @@
 
 #include "filesystem.h"
 
-long long createDirectory(Filesystem* fs, char* name);
-int createDirectoryAtBlock(Filesystem* fs, char* name, unsigned int blockNum);
+long long createDirectory(Filesystem* fs);
+int createDirectoryAtBlock(Filesystem* fs, unsigned int blockNum);
 int pushDirectoryToStack(Filesystem* fs, FsDirectory dir);
 FsDirectory popDirectoryFromStack(Filesystem* fs);
-FsDirectory openBlockAsDirectory(Filesystem* fs, unsigned int blockNum);
-void closeDirectory(FsDirectory dir);
+FsDirectory openBlockAsDirectory(Filesystem* fs, unsigned int blockNum, char* dirName);
 
 #endif /* FSDIRECTORY_H */
