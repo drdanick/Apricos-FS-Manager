@@ -72,3 +72,38 @@ FsDirectory openBlockAsDirectory(Filesystem* fs, unsigned int blockNum, char* di
 
     return directory;
 }
+
+int findNextFreeDirEntry(FsDirectory* dir) {
+    int i = 0;
+    for( ; i < MAX_DIR_ENTRIES; i++) {
+        if(dir->dirEntries[i].markerAndTrackNum & VALID_DIR_ENTRY_MASK) {
+            return i;
+        }
+    }
+
+    return -1;
+}
+
+int addDirectoryBlockEntrytoDirectory(FsDirectory* parentDir, unsigned int childBlock, char* childName) {
+    int childTrack = BLOCK_TO_TRACK(childBlock);
+    int childSector = BLOCK_TO_SECTOR(childBlock);
+
+    return addDirectoryEntrytoDirectory(parentDir, childTrack, childSector, childName);
+}
+
+int addDirectoryEntrytoDirectory(FsDirectory* parentDir, int childtrack, int childSector, char* childName) {
+    FsDirectoryEntry* entry;
+    int childIndex = findNextFreeDirEntry(parentDir);
+
+    if(childIndex == -1) {
+        return -1;
+    }
+
+    entry = &parentDir->dirEntries[childIndex];
+
+    entry->markerAndTrackNum =  VALID_DIR_ENTRY_MASK | DIR_ENTRY_TYPE_MASK | (childtrack & DIR_ENTRY_TRACK_MASK);
+    entry->sectorNum = childSector & DIR_ENTRY_SECTOR_MASK;
+    memcpy(entry->name, childName, MIN(MAX_DIR_ENTRY_NAME_LENGTH, strlen(childName)));
+
+    return 1;
+}

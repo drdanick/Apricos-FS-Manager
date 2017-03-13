@@ -21,12 +21,13 @@
 
 /* Directory entry masks */
 #define VALID_DIR_ENTRY_MASK   0x80
-#define DIR_ENTRY_IS_FILE_MASK 0x20
+#define DIR_ENTRY_TYPE_MASK    0x20
 #define DIR_ENTRY_TRACK_MASK   0x1F
 #define DIR_ENTRY_SECTOR_MASK  0x3F
 
 /* Directory entry constants */
 #define MAX_DIR_ENTRY_NAME_LENGTH 6
+#define MAX_DIR_ENTRIES           32
 
 
 /*
@@ -36,8 +37,8 @@
 /* NOTE: This maps directly to a pre-existing memory structure, 
  * so care should be taken not to change the structs byte alignment. */
 typedef struct {
-    unsigned int trackNum: 8;
-    unsigned int segmentNum: 8;
+    unsigned int markerAndTrackNum: 8;
+    unsigned int sectorNum: 8;
     char name[6];
 } FsDirectoryEntry;
 
