@@ -38,7 +38,14 @@ void printStatus() {
 }
 
 void mountCmd(char* args) {
-    Filesystem* fs = mountFilesystem(args);
+    Filesystem* fs;
+
+    if(args == NULL) {
+        printf("Invalid file name\n");
+        return;
+    }
+        
+    fs = mountFilesystem(args);
     if(fs == NULL) {
         printf("Cannot load file \"%s\"\n", args);
         return;
