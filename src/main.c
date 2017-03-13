@@ -39,7 +39,13 @@ void init(int argc, char** argv) {
 void printPrompt() {
     if(globalFileSystem) {
         char* volname = globalFileSystem->volumeInfo->volumeName;
-        printf("[%s]", strlen(volname) < 1 ? "Unformatted" : volname);
+        if(strlen(volname) < 1)  {
+            printf("[Unformatted]");
+        } else {
+            printf("[%s", volname);
+            printPathString(globalFileSystem);
+            printf("]");
+        }
     }
     printf(PROMPT);
 }

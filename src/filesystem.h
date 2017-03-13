@@ -34,7 +34,7 @@
  * Data structures
  */
 
-/* NOTE: This maps directly to a pre-existing memory structure, 
+/* NOTE: This maps directly to a pre-existing memory structure,
  * so care should be taken not to change the structs byte alignment. */
 typedef struct {
     unsigned int markerAndTrackNum: 8;
@@ -73,5 +73,9 @@ void unmountFilesystem(Filesystem* fs, char save);
 void clearDirectoryStack(Filesystem* fs);
 void formatFilesystem(Filesystem* fs, char* volumeName);
 
+/*
+ * Misc utility functions
+ */
+void printPathString(Filesystem* fs);
 
 #endif /* FILESYSTEM_H */

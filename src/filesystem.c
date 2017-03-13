@@ -67,3 +67,18 @@ void formatFilesystem(Filesystem* fs, char* volumeName) {
     /* create the root directory */
     createDirectory(fs);
 }
+
+void printPathString(Filesystem* fs) {
+    static char nameBuff[MAX_DIR_ENTRY_NAME_LENGTH + 1];
+    int i;
+
+    /* In case the null terminator is missing, we have to do this */
+    memset(nameBuff, '\0', MAX_DIR_ENTRY_NAME_LENGTH + 1);
+
+    for(i = 0 ; i < fs->currentPathUnit; i++) {
+        FsDirectory dir = fs->pathStack[i];
+        memcpy(nameBuff, dir.name, strlen(dir.name));
+
+        printf("/%s", nameBuff);
+    }
+}

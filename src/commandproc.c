@@ -29,6 +29,9 @@ void printStatus() {
     if(globalFileSystem) {
         char* volname = globalFileSystem->volumeInfo->volumeName;
         printf("\tVolume name: %s\n", strlen(volname) < 1 ? "[Unformatted]" : volname);
+        if(strlen(volname) >= 1) {
+            printf("\t\tCurrent working directory: "); printPathString(globalFileSystem);
+        }
     }
 
     printf("\n");
