@@ -126,6 +126,15 @@ int removeDirEntryByName(FsDirectory* dir, char* name) {
     return removeDirEntry(entry);
 }
 
+int allocateAndAddDirectoryEntryToDirectory(Filesystem* fs, FsDirectory* parentDir, char* childName) {
+    long long blockNum = autoAllocateBlock(fs);
+
+    if(blockNum < 0)
+        return 0;
+
+    return addDirectoryBlockEntrytoDirectory(parentDir, blockNum, childName);
+}
+
 int addDirectoryBlockEntrytoDirectory(FsDirectory* parentDir, unsigned int childBlock, char* childName) {
     int childTrack = BLOCK_TO_TRACK(childBlock);
     int childSector = BLOCK_TO_SECTOR(childBlock);

@@ -13,6 +13,7 @@ int findNextFreeDirEntry(FsDirectory* dir);
 FsDirectoryEntry* findDirEntryByName(FsDirectory* dir, char* name);
 int removeDirEntry(FsDirectoryEntry* entry);
 int removeDirEntryByName(FsDirectory* dir, char* name);
+int allocateAndAddDirectoryEntryToDirectory(Filesystem* fs, FsDirectory* parentDir, char* childName);
 int addDirectoryBlockEntrytoDirectory(FsDirectory* parentDir, unsigned int childBlock, char* childName);
 int addDirectoryEntrytoDirectory(FsDirectory* parentDir, int childtrack, int childSector, char* childName);
 
