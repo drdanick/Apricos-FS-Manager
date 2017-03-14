@@ -122,6 +122,17 @@ void mkdirCmd(char* dirName) {
     allocateAndAddDirectoryEntryToDirectory(globalFileSystem, dir, dirName);
 }
 
+void lsCmd() {
+    if(!globalFileSystem || !getWorkingDirectory(globalFileSystem)) {
+        return;
+    }
+
+    printf("Directory listing of ");
+    printPathString(globalFileSystem);
+    printf(":\n");
+    printDirectoryListing(getWorkingDirectory(globalFileSystem), "\t");
+}
+
 int processLine(char* line) {
     char* command;
     strToLower(line);
@@ -184,6 +195,13 @@ int processLine(char* line) {
             mkdirCmd(dirName);
         } else {
             printf("Invalid directory name.\n");
+        }
+    }
+    else if(strcmp("ls", command) == 0 || strcmp("dir", command) == 0) {
+        if(globalFileSystem) {
+            lsCmd();
+        } else {
+            printf("No filesystem mounted!\n");
         }
     }
     else {

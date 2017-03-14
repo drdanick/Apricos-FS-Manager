@@ -113,8 +113,9 @@ void printDirectoryListing(FsDirectory* dir, char* prefix) {
     memset(nameBuff, '\0', MAX_DIR_ENTRY_NAME_LENGTH + 1);
 
     while(entry = &dir->dirEntries[i++], i < MAX_DIR_ENTRIES && !isDirEntryFree(entry)) {
+        char* suffix = (entry->markerAndTrackNum & DIR_ENTRY_TYPE_MASK) ? "" : "/";
         memcpy(nameBuff, entry->name, sizeof(nameBuff));
-        printf("%s%s\n", prefix, nameBuff);
+        printf("%s%s%s\n", prefix, nameBuff, suffix);
     }
 }
 
