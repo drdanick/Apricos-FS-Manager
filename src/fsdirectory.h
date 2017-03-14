@@ -9,6 +9,7 @@ int pushDirectoryToStack(Filesystem* fs, FsDirectory dir);
 FsDirectory popDirectoryFromStack(Filesystem* fs);
 FsDirectory openBlockAsDirectory(Filesystem* fs, unsigned int blockNum, char* dirName);
 void printDirectoryListing(FsDirectory* dir, char* prefix);
+FsDirectory getFsDirectoryFromEntry(Filesystem* fs, FsDirectoryEntry* entry);
 int isDirEntryFree(FsDirectoryEntry* entry);
 int findNextFreeDirEntry(FsDirectory* dir);
 FsDirectoryEntry* findDirEntryByName(FsDirectory* dir, char* name);

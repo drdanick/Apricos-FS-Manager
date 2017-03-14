@@ -73,6 +73,23 @@ FsDirectory openBlockAsDirectory(Filesystem* fs, unsigned int blockNum, char* di
     return directory;
 }
 
+FsDirectory getFsDirectoryFromEntry(Filesystem* fs, FsDirectoryEntry* entry) {
+    FsDirectory directory;
+
+    if(!fs || !entry) {
+        directory.name = NULL;
+        directory.rawData = NULL;
+        directory.dirEntries = NULL;
+        return directory;
+    } else {
+        unsigned int track = entry->markerAndTrackNum & TRACK_ID_MASK;
+        unsigned int sector = entry->sectorNum & SECTOR_ID_MASK;
+        unsigned int block = TRACK_AND_SECTOR_TO_BLOCK(track, sector);
+
+        return openBlockAsDirectory(fs, block, entry->name);
+    }
+}
+
 int isDirEntryFree(FsDirectoryEntry* entry) {
     return !(entry->markerAndTrackNum & VALID_DIR_ENTRY_MASK);
 }
