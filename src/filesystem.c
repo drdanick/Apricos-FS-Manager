@@ -47,9 +47,9 @@ void clearDirectoryStack(Filesystem* fs) {
 }
 
 FsDirectory* getWorkingDirectory(Filesystem* fs) {
-    if(fs->currentPathUnit == 0)
+    if(!fs || fs->currentPathUnit == 0)
         return NULL;
-    return &fs->pathStack[fs->currentPathUnit];
+    return &fs->pathStack[fs->currentPathUnit - 1];
 }
 
 void formatFilesystem(Filesystem* fs, char* volumeName) {
