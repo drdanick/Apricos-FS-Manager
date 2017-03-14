@@ -104,7 +104,6 @@ FsDirectoryEntry* findDirEntryByName(FsDirectory* dir, char* name) {
 
 void printDirectoryListing(FsDirectory* dir, char* prefix) {
     char nameBuff[MAX_DIR_ENTRY_NAME_LENGTH + 1]; /* Used to convert dir names to c style strings with null terminator */
-    FsDirectoryEntry* entry;
     int i = 0;
 
     if(!prefix)
@@ -112,8 +111,15 @@ void printDirectoryListing(FsDirectory* dir, char* prefix) {
 
     memset(nameBuff, '\0', MAX_DIR_ENTRY_NAME_LENGTH + 1);
 
-    while(entry = &dir->dirEntries[i++], i < MAX_DIR_ENTRIES && !isDirEntryFree(entry)) {
-        char* suffix = (entry->markerAndTrackNum & DIR_ENTRY_TYPE_MASK) ? "" : "/";
+    for( ; i < MAX_DIR_ENTRIES; i++) {
+        char* suffix;
+        FsDirectoryEntry* entry = &dir->dirEntries[i];
+
+        if(isDirEntryFree(entry)) {
+            break;
+        }
+
+        suffix = (entry->markerAndTrackNum & DIR_ENTRY_TYPE_MASK) ? "" : "/";
         memcpy(nameBuff, entry->name, sizeof(nameBuff));
         printf("%s%s%s\n", prefix, nameBuff, suffix);
     }
