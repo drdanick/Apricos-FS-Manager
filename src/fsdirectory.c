@@ -102,19 +102,19 @@ FsDirectoryEntry* findDirEntryByName(FsDirectory* dir, char* name) {
     return NULL;
 }
 
-void printDirectoryListing(FsDirectory* dir, char* listingName) {
+void printDirectoryListing(FsDirectory* dir, char* prefix) {
     char nameBuff[MAX_DIR_ENTRY_NAME_LENGTH + 1]; /* Used to convert dir names to c style strings with null terminator */
     FsDirectoryEntry* entry;
     int i = 0;
 
-    if(listingName)
-        printf("Directory listing of %s:\n", listingName);
+    if(!prefix)
+        prefix = "";
 
     memset(nameBuff, '\0', MAX_DIR_ENTRY_NAME_LENGTH + 1);
 
     while(entry = &dir->dirEntries[i++], i < MAX_DIR_ENTRIES && !isDirEntryFree(entry)) {
         memcpy(nameBuff, entry->name, sizeof(nameBuff));
-        printf("\t%s\n", nameBuff);
+        printf("%s%s\n", prefix, nameBuff);
     }
 }
 
