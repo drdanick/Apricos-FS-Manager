@@ -8,7 +8,9 @@ int createDirectoryAtBlock(Filesystem* fs, unsigned int blockNum);
 int pushDirectoryToStack(Filesystem* fs, FsDirectory dir);
 FsDirectory popDirectoryFromStack(Filesystem* fs);
 FsDirectory openBlockAsDirectory(Filesystem* fs, unsigned int blockNum, char* dirName);
+int isDirEntryFree(FsDirectoryEntry* entry);
 int findNextFreeDirEntry(FsDirectory* dir);
+FsDirectoryEntry* findDirEntryByName(FsDirectory* dir, char* name);
 int addDirectoryBlockEntrytoDirectory(FsDirectory* parentDir, unsigned int childBlock, char* childName);
 int addDirectoryEntrytoDirectory(FsDirectory* parentDir, int childtrack, int childSector, char* childName);
 

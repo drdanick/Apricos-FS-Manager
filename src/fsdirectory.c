@@ -73,15 +73,33 @@ FsDirectory openBlockAsDirectory(Filesystem* fs, unsigned int blockNum, char* di
     return directory;
 }
 
+int isDirEntryFree(FsDirectoryEntry* entry) {
+    return !entry->markerAndTrackNum & VALID_DIR_ENTRY_MASK;
+}
+
 int findNextFreeDirEntry(FsDirectory* dir) {
     int i = 0;
     for( ; i < MAX_DIR_ENTRIES; i++) {
-        if(dir->dirEntries[i].markerAndTrackNum & VALID_DIR_ENTRY_MASK) {
+        if(isDirEntryFree(&dir->dirEntries[i])) {
             return i;
         }
     }
 
     return -1;
+}
+
+FsDirectoryEntry* findDirEntryByName(FsDirectory* dir, char* name) {
+    int i = 0;
+    int namelen = MIN(MAX_DIR_ENTRY_NAME_LENGTH, strlen(name));
+    FsDirectoryEntry* entries = dir->dirEntries;
+
+    for( ; i < MAX_DIR_ENTRIES; i++) {
+        FsDirectoryEntry* entry = &entries[i];
+        if(!isDirEntryFree(entry) && strncmp(entry->name, name, namelen) == 0)
+            return entry;
+    }
+
+    return NULL;
 }
 
 int addDirectoryBlockEntrytoDirectory(FsDirectory* parentDir, unsigned int childBlock, char* childName) {
