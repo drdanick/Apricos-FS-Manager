@@ -102,6 +102,30 @@ FsDirectoryEntry* findDirEntryByName(FsDirectory* dir, char* name) {
     return NULL;
 }
 
+int removeDirEntry(FsDirectoryEntry* entry) {
+    if(isDirEntryFree(entry)) {
+        return 0;
+    }
+
+    /* clear the first byte */
+    entry->markerAndTrackNum = 0x00;
+
+    /* clear the name */
+    memset(entry->name, '\0', MAX_DIR_ENTRY_NAME_LENGTH);
+
+    return 1;
+}
+
+int removeDirEntryByName(FsDirectory* dir, char* name) {
+    FsDirectoryEntry* entry = findDirEntryByName(dir, name);
+
+    if(entry == NULL) {
+        return 0;
+    }
+
+    return removeDirEntry(entry);
+}
+
 int addDirectoryBlockEntrytoDirectory(FsDirectory* parentDir, unsigned int childBlock, char* childName) {
     int childTrack = BLOCK_TO_TRACK(childBlock);
     int childSector = BLOCK_TO_SECTOR(childBlock);

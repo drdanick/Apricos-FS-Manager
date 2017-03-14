@@ -39,7 +39,7 @@
 typedef struct {
     unsigned int markerAndTrackNum: 8;
     unsigned int sectorNum: 8;
-    char name[6];
+    char name[MAX_DIR_ENTRY_NAME_LENGTH];
 } FsDirectoryEntry;
 
 typedef struct {

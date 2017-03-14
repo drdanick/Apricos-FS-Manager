@@ -11,6 +11,8 @@ FsDirectory openBlockAsDirectory(Filesystem* fs, unsigned int blockNum, char* di
 int isDirEntryFree(FsDirectoryEntry* entry);
 int findNextFreeDirEntry(FsDirectory* dir);
 FsDirectoryEntry* findDirEntryByName(FsDirectory* dir, char* name);
+int removeDirEntry(FsDirectoryEntry* entry);
+int removeDirEntryByName(FsDirectory* dir, char* name);
 int addDirectoryBlockEntrytoDirectory(FsDirectory* parentDir, unsigned int childBlock, char* childName);
 int addDirectoryEntrytoDirectory(FsDirectory* parentDir, int childtrack, int childSector, char* childName);
 
