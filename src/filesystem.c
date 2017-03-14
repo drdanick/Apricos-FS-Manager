@@ -46,6 +46,12 @@ void clearDirectoryStack(Filesystem* fs) {
     fs->currentPathUnit = 0;
 }
 
+FsDirectory* getWorkingDirectory(Filesystem* fs) {
+    if(fs->currentPathUnit == 0)
+        return NULL;
+    return &fs->pathStack[fs->currentPathUnit];
+}
+
 void formatFilesystem(Filesystem* fs, char* volumeName) {
     static unsigned int allocatedBlocks[SECTORS_PER_TRACK];
 
