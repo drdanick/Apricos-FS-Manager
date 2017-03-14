@@ -133,6 +133,37 @@ void lsCmd() {
     printDirectoryListing(getWorkingDirectory(globalFileSystem), "\t");
 }
 
+int cdCmd(char* dir) {
+    if(strcmp(".", dir) == 0) {
+        return 1;
+    }
+
+    if(strcmp("..", dir) == 0) {
+        if(globalFileSystem->currentPathUnit <= 1) {
+            return 0;
+        }
+        popDirectoryFromStack(globalFileSystem);
+        return 1;
+    } else {
+        FsDirectory* parentDir = getWorkingDirectory(globalFileSystem);
+        FsDirectoryEntry* dirEntry = findDirEntryByName(parentDir, dir);
+        FsDirectory childDir;
+
+        if(!dirEntry) {
+            return 0;
+        }
+
+        childDir = getFsDirectoryFromEntry(globalFileSystem, dirEntry);
+        if(!childDir.rawData) {
+            return 0;
+        }
+
+        pushDirectoryToStack(globalFileSystem, childDir);
+
+        return 1;
+    }
+}
+
 int processLine(char* line) {
     char* command;
     strToLower(line);
@@ -202,6 +233,26 @@ int processLine(char* line) {
             lsCmd();
         } else {
             printf("No filesystem mounted!\n");
+        }
+    }
+    else if(strcmp("cd", command) == 0) {
+        char* dir;
+        int error = 0;
+        FsDirectory* pathStackCopy = savePathStack(globalFileSystem);
+        int oldPathStackEndIndex = globalFileSystem->currentPathUnit;
+
+        while(dir = strtok(NULL, "/\n"), dir != NULL) {
+            if(!cdCmd(strToUpper(dir))) {
+                error = 1;
+                restorePathStack(globalFileSystem, pathStackCopy, oldPathStackEndIndex);
+                break;
+            }
+        }
+
+        if(!error) {
+            freePathStack(pathStackCopy);
+        } else {
+            printf("Could not change to specified directory.\n");
         }
     }
     else {
