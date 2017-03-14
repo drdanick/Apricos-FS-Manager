@@ -8,11 +8,20 @@
 #include "memdumper.h"
 #include "allocator.h"
 #include "diskio.h"
+#include "fsdirectory.h"
 
 char* strToLower(char* str) {
     int i = 0;
     for( ; str[i] != '\0'; i++)
         str[i] = tolower(str[i]);
+
+    return str;
+}
+
+char* strToUpper(char* str) {
+    int i = 0;
+    for( ; str[i] != '\0'; i++)
+        str[i] = toupper(str[i]);
 
     return str;
 }
@@ -44,7 +53,7 @@ void mountCmd(char* args) {
         printf("Invalid file name\n");
         return;
     }
-        
+
     fs = mountFilesystem(args);
     if(fs == NULL) {
         printf("Cannot load file \"%s\"\n", args);
@@ -94,6 +103,23 @@ void peekCmd(unsigned int track, unsigned int sector) {
         printf("]\n");
     } while(peekData < peekEnd);
 
+}
+
+void mkdirCmd(char* dirName) {
+    FsDirectory* dir = getWorkingDirectory(globalFileSystem);
+
+    if(!dirName || !dir) {
+        return;
+    }
+
+    dirName = strToUpper(dirName);
+
+    if(findDirEntryByName(dir, dirName)) {
+        printf("Directory already exists!\n");
+        return;
+    }
+
+    allocateAndAddDirectoryEntryToDirectory(globalFileSystem, dir, dirName);
 }
 
 int processLine(char* line) {
@@ -150,6 +176,14 @@ int processLine(char* line) {
                 formatFilesystem(globalFileSystem, volnamearg);
                 printf("Done!\n");
             }
+        }
+    }
+    else if(strcmp("mkdir", command) == 0) {
+        char* dirName = strtok(NULL, " \n");
+        if(dirName) {
+            mkdirCmd(dirName);
+        } else {
+            printf("Invalid directory name.\n");
         }
     }
     else {

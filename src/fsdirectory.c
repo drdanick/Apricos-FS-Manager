@@ -74,7 +74,7 @@ FsDirectory openBlockAsDirectory(Filesystem* fs, unsigned int blockNum, char* di
 }
 
 int isDirEntryFree(FsDirectoryEntry* entry) {
-    return !entry->markerAndTrackNum & VALID_DIR_ENTRY_MASK;
+    return !(entry->markerAndTrackNum & VALID_DIR_ENTRY_MASK);
 }
 
 int findNextFreeDirEntry(FsDirectory* dir) {
@@ -162,7 +162,9 @@ int addDirectoryEntrytoDirectory(FsDirectory* parentDir, int childtrack, int chi
     FsDirectoryEntry* entry;
     int childIndex = findNextFreeDirEntry(parentDir);
 
-    if(childIndex == -1) {
+    entry = findDirEntryByName(parentDir, childName);
+
+    if(entry || childIndex == -1) {
         return -1;
     }
 
