@@ -85,6 +85,32 @@ void printPathString(Filesystem* fs) {
         FsDirectory dir = fs->pathStack[i];
         memcpy(nameBuff, dir.name, strlen(dir.name));
 
-        printf("/%s", nameBuff);
+        printf("%s/", nameBuff);
     }
+}
+
+FsDirectory* savePathStack(Filesystem* fs) {
+    FsDirectory* dirStackCopy = malloc(sizeof(FsDirectory) * MAX_PATH_DEPTH);
+    int i = 0;
+
+    for( ; i < fs->currentPathUnit; i++) {
+        dirStackCopy[i] = fs->pathStack[i];
+    }
+
+    return dirStackCopy;
+}
+
+void restorePathStack(Filesystem* fs, FsDirectory* srcStack, int srcStackNextFreeSlot) {
+    int i = 0;
+
+    for( ; i < srcStackNextFreeSlot; i++) {
+        fs->pathStack[i] = srcStack[i];
+    }
+    fs->currentPathUnit = srcStackNextFreeSlot;
+
+    free(srcStack);
+}
+
+void freePathStack(FsDirectory* pathStack) {
+    free(pathStack);
 }

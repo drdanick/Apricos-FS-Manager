@@ -78,5 +78,8 @@ void formatFilesystem(Filesystem* fs, char* volumeName);
  * Misc utility functions
  */
 void printPathString(Filesystem* fs);
+FsDirectory* savePathStack(Filesystem* fs);
+void restorePathStack(Filesystem* fs, FsDirectory* srcStack, int srcStackNextFreeSlot);
+void freePathStack(FsDirectory* pathStack);
 
 #endif /* FILESYSTEM_H */
