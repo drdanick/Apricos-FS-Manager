@@ -170,7 +170,7 @@ int addDirectoryEntrytoDirectory(FsDirectory* parentDir, int childtrack, int chi
 
     entry = &parentDir->dirEntries[childIndex];
 
-    entry->markerAndTrackNum =  VALID_DIR_ENTRY_MASK | DIR_ENTRY_TYPE_MASK | (childtrack & DIR_ENTRY_TRACK_MASK);
+    entry->markerAndTrackNum =  VALID_DIR_ENTRY_MASK | (childtrack & DIR_ENTRY_TRACK_MASK);
     entry->sectorNum = childSector & DIR_ENTRY_SECTOR_MASK;
     memcpy(entry->name, childName, MIN(MAX_DIR_ENTRY_NAME_LENGTH, strlen(childName)));
 
