@@ -164,6 +164,18 @@ int cdCmd(char* dir) {
     }
 }
 
+int toggleexecCmd(char* entryName) {
+    FsDirectoryEntry* entry = findDirEntryByName(getWorkingDirectory(globalFileSystem), entryName);
+
+    if(!entry || !(entry->markerAndTrackNum & DIR_ENTRY_TYPE_MASK)) {
+        return 0;
+    }
+
+    entry->markerAndTrackNum ^= DIR_ENTRY_EXECUTABLE_MASK;
+
+    return 1;
+}
+
 int processLine(char* line) {
     char* command;
     strToLower(line);
@@ -253,6 +265,20 @@ int processLine(char* line) {
             freePathStack(pathStackCopy);
         } else {
             printf("Could not change to specified directory.\n");
+        }
+    }
+    else if(strcmp("toggleexec", command) == 0) {
+        char* entryName = strtok(NULL, " \n");
+        if(!entryName || strlen(entryName) == 0) {
+            printf("Invalid directory entry\n");
+        } else {
+            if(globalFileSystem) {
+                if(!toggleexecCmd(entryName)) {
+                    printf("Invalid directory entry\n");
+                }
+            } else {
+                printf("No filesystem mounted!\n");
+            }
         }
     }
     else {
