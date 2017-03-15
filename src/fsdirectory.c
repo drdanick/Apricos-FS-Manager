@@ -167,7 +167,7 @@ int removeDirEntryByName(FsDirectory* dir, char* name) {
 }
 
 int allocateAndAddDirectoryEntryToDirectory(Filesystem* fs, FsDirectory* parentDir, char* childName) {
-    long long blockNum = autoAllocateBlock(fs);
+    long long blockNum = createDirectory(fs);
 
     if(blockNum < 0)
         return 0;
