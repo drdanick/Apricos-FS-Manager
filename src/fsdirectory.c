@@ -119,6 +119,15 @@ FsDirectoryEntry* findDirEntryByName(FsDirectory* dir, char* name) {
     return NULL;
 }
 
+void printDirectoryEntryAttributes(FsDirectoryEntry* entry, char* prefix, char* suffix) {
+    printf("%s%c%c%s",
+            strlen(prefix) > 0 ? prefix : "",
+            entry->markerAndTrackNum & DIR_ENTRY_TYPE_MASK ? 'f' : 'd',
+            entry->markerAndTrackNum & DIR_ENTRY_EXECUTABLE_MASK ? 'x' : '-',
+            strlen(suffix) > 0 ? suffix : ""
+            );
+}
+
 void printDirectoryListing(FsDirectory* dir, char* prefix) {
     char nameBuff[MAX_DIR_ENTRY_NAME_LENGTH + 1]; /* Used to convert dir names to c style strings with null terminator */
     int i = 0;
@@ -138,7 +147,9 @@ void printDirectoryListing(FsDirectory* dir, char* prefix) {
 
         suffix = (entry->markerAndTrackNum & DIR_ENTRY_TYPE_MASK) ? "" : "/";
         memcpy(nameBuff, entry->name, sizeof(nameBuff));
-        printf("%s%s%s\n", prefix, nameBuff, suffix);
+        printf("%s", prefix);
+        printDirectoryEntryAttributes(entry, "[", "] ");
+        printf("%s%s\n", nameBuff, suffix);
     }
 }
 
@@ -199,4 +210,8 @@ int addDirectoryEntrytoDirectory(FsDirectory* parentDir, int childtrack, int chi
     memcpy(entry->name, childName, MIN(MAX_DIR_ENTRY_NAME_LENGTH, strlen(childName)));
 
     return 1;
+}
+
+void directoryEntryToggleFlag(FsDirectoryEntry* entry, char flag) {
+    entry->markerAndTrackNum ^= flag;
 }
