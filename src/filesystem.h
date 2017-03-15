@@ -20,10 +20,11 @@
 #define ROOT_FOLDER_SECTOR 0
 
 /* Directory entry masks */
-#define VALID_DIR_ENTRY_MASK   0x80
-#define DIR_ENTRY_TYPE_MASK    0x20
-#define DIR_ENTRY_TRACK_MASK   0x1F
-#define DIR_ENTRY_SECTOR_MASK  0x3F
+#define VALID_DIR_ENTRY_MASK      0x80
+#define DIR_ENTRY_EXECUTABLE_MASK 0x40
+#define DIR_ENTRY_TYPE_MASK       0x20
+#define DIR_ENTRY_TRACK_MASK      0x1F
+#define DIR_ENTRY_SECTOR_MASK     0x3F
 
 /* Directory entry constants */
 #define MAX_DIR_ENTRY_NAME_LENGTH 6
