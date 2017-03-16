@@ -104,6 +104,32 @@ unsigned int calculateFileSize(Filesystem* fs, FsFile* file) {
     return size;
 }
 
+long long allocateNewFileBlock(Filesystem* fs, FsFile* file) {
+    FsFileMetadata* metadata = file->fileMetadata;
+    int i = 0;
+
+    for( ; i < MAX_FILE_BLOCKS; i++) {
+        if(!metadata->filePointers[i].track) {
+            long long newBlock = autoAllocateBlock(fs);
+            unsigned int track = BLOCK_TO_TRACK(newBlock);
+            unsigned int sector = BLOCK_TO_SECTOR(newBlock);
+
+            if(newBlock == -1) {
+                return -1;
+            }
+
+            metadata->filePointers[i].track = track;
+            metadata->filePointers[i].sector = sector;
+
+            metadata->fileSize += SECTOR_SIZE;
+
+            return newBlock;
+        }
+    }
+
+    return -1;
+}
+
 int deleteAllFileBlocks(Filesystem* fs, FsFile* file) {
     FsFileMetadata* metadata = file->fileMetadata;
     int i = 0;
