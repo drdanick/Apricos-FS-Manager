@@ -176,6 +176,33 @@ int toggleexecCmd(char* entryName) {
     return 1;
 }
 
+void rmCmd(char* entryName) {
+    entryName = strToUpper(entryName);
+    FsDirectoryEntry* entry = findDirEntryByName(getWorkingDirectory(globalFileSystem), entryName);
+
+    if(!entry) {
+        printf("Specified entry does not exist\n");
+        return;
+    }
+
+    if(!(entry->markerAndTrackNum & DIR_ENTRY_TYPE_MASK)) {
+        /* entry s a directory, so make sure it's empty */
+        FsDirectory dir = getFsDirectoryFromEntry(globalFileSystem, entry);
+        if(dir.rawData == NULL) {
+            printf("Unnable to remove directory\n");
+            return;
+        }
+        if(countDirectoryEntries(&dir) > 0) {
+            printf("Cannot remove non-empty directory\n");
+            return;
+        }
+    }
+
+    if(!freeSector(globalFileSystem, entry->markerAndTrackNum & TRACK_ID_MASK, entry->sectorNum & SECTOR_ID_MASK) || !removeDirEntry(entry)) {
+        printf("Error removing entry\n");
+    }
+}
+
 int processLine(char* line) {
     char* command;
     strToLower(line);
@@ -279,6 +306,18 @@ int processLine(char* line) {
             } else {
                 printf("No filesystem mounted!\n");
             }
+        }
+    }
+    else if(strcmp("rm", command) == 0) {
+        char* entryName = strtok(NULL, " \n");
+        if(globalFileSystem) {
+            if(!entryName || strlen(entryName) == 0) {
+                printf("Invalid directory entry\n");
+            } else {
+                rmCmd(entryName);
+            }
+        } else {
+            printf("No filesystem mounted!\n");
         }
     }
     else {
