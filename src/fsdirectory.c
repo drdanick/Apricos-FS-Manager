@@ -154,7 +154,7 @@ void printDirectoryListing(FsDirectory* dir, char* prefix) {
         FsDirectoryEntry* entry = &dir->dirEntries[i];
 
         if(isDirEntryFree(entry)) {
-            break;
+            continue;
         }
 
         suffix = (entry->markerAndTrackNum & DIR_ENTRY_TYPE_MASK) ? "" : "/";
