@@ -53,6 +53,9 @@ FsDirectory popDirectoryFromStack(Filesystem* fs) {
 }
 
 int openBlockAsDirectory(Filesystem* fs, unsigned int blockNum, char* dirName, FsDirectory* dir) {
+    if(!dir) {
+        return 0;
+    }
 
     if(!isBlockFree(fs, blockNum)) {
         char* dirMetadataSector = getBlockData(fs->diskData, blockNum);
