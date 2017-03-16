@@ -9,6 +9,7 @@
 #include "allocator.h"
 #include "diskio.h"
 #include "fsdirectory.h"
+#include "fsfile.h"
 
 char* strToLower(char* str) {
     int i = 0;
@@ -165,6 +166,7 @@ int cdCmd(char* dir) {
 }
 
 int toggleexecCmd(char* entryName) {
+    entryName = strToUpper(entryName);
     FsDirectoryEntry* entry = findDirEntryByName(getWorkingDirectory(globalFileSystem), entryName);
 
     if(!entry || !(entry->markerAndTrackNum & DIR_ENTRY_TYPE_MASK)) {
@@ -201,6 +203,16 @@ void rmCmd(char* entryName) {
     if(!freeSector(globalFileSystem, entry->markerAndTrackNum & TRACK_ID_MASK, entry->sectorNum & SECTOR_ID_MASK) || !removeDirEntry(entry)) {
         printf("Error removing entry\n");
     }
+}
+
+int touchCmd(char* fileName) {
+    fileName = strToUpper(fileName);
+
+    if(createFile(globalFileSystem, getWorkingDirectory(globalFileSystem), fileName) == -1) {
+        return 0;
+    }
+
+    return 1;
 }
 
 int processLine(char* line) {
@@ -318,6 +330,20 @@ int processLine(char* line) {
             }
         } else {
             printf("No filesystem mounted!\n");
+        }
+    }
+    else if(strcmp("touch", command) == 0) {
+        char* entryName = strtok(NULL, " \n");
+        if(globalFileSystem) {
+            if(!entryName || strlen(entryName) == 0) {
+                printf("Invalid file name\n");
+            } else {
+                if(!touchCmd(entryName)) {
+                    printf("Error creating file\n");
+                }
+            }
+        } else {
+            rmCmd(entryName);
         }
     }
     else {
