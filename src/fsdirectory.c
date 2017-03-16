@@ -72,6 +72,9 @@ int openBlockAsDirectory(Filesystem* fs, unsigned int blockNum, char* dirName, F
 }
 
 int getFsDirectoryFromEntry(Filesystem* fs, FsDirectoryEntry* entry, FsDirectory* dir) {
+    if(!dir) {
+        return 0;
+    }
 
     if(!fs || !entry || entry->markerAndTrackNum & DIR_ENTRY_TYPE_MASK) {
         return 0;
