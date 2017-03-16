@@ -33,6 +33,9 @@
 /* File Metadata constants */
 #define MAX_FILE_BLOCKS 127
 
+/* File Metadata masks*/
+#define FILE_METADATA_SIZE_MASK 0x0FFFF
+
 
 /*
  * Data structures
@@ -61,6 +64,12 @@ typedef struct {
 typedef struct {
     int fileSize: 16;
     FsFileBlockPointer filePointers[MAX_FILE_BLOCKS];
+} FsFileMetadata;
+
+typedef struct {
+    char name[MAX_DIR_ENTRY_NAME_LENGTH + 1];
+    char* rawData;
+    FsFileMetadata* fileMetadata;
 } FsFile;
 
 typedef struct {

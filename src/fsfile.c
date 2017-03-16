@@ -1,7 +1,9 @@
 #include <string.h>
 #include "fsfile.h"
+#include "filesystem.h"
 #include "fsdirectory.h"
 #include "allocator.h"
+#include "apricosfsman.h"
 
 long long createFile(Filesystem* fs, FsDirectory* parentDir, char* name) {
     long long fileMetadataBlock = findNextFreeBlock(fs, 0);
@@ -33,7 +35,48 @@ int createFileAtBlock(Filesystem* fs, FsDirectory* parentDir, unsigned int block
         return 0;
     }
 
+    /* Initialize the size field */
+    ((FsFileMetadata*)fileMetadata)->fileSize = SECTOR_SIZE & FILE_METADATA_SIZE_MASK;
+
     return 1;
 }
 
 /* TODO: Add function to clear all blocks allocated for a file */
+int openBlockAsFile(Filesystem* fs, unsigned int blockNum, char* fileName, FsFile* file) {
+    if(!file) {
+        return 0;
+    }
+
+    if(isBlockFree(fs, blockNum)) {
+        return 0;
+    } else {
+        memset(file->name, '\0', sizeof(file->name));
+        memcpy(file->name, fileName, MIN(MAX_DIR_ENTRY_NAME_LENGTH, strlen(fileName)));
+        file->rawData = getBlockData(fs->diskData, blockNum);
+        file->fileMetadata = (FsFileMetadata*)file->rawData;
+
+        return 1;
+    }
+}
+
+int getFsFileFromEntry(Filesystem* fs, FsDirectoryEntry* entry, FsFile* file) {
+    static char nameBuffer[sizeof(file->name)];
+
+    if(!file) {
+        return 0;
+    }
+
+    if(!fs || !entry || !(entry->markerAndTrackNum & DIR_ENTRY_TYPE_MASK)) {
+        return 0;
+    } else {
+        unsigned int track = entry->markerAndTrackNum & TRACK_ID_MASK;
+        unsigned int sector = entry->sectorNum & SECTOR_ID_MASK;
+        unsigned int block = TRACK_AND_SECTOR_TO_BLOCK(track, sector);
+
+        /* Convert entry name into a C style string */
+        memset(nameBuffer, '\0', sizeof(nameBuffer));
+        memcpy(nameBuffer, entry->name, MAX_DIR_ENTRY_NAME_LENGTH);
+
+        return openBlockAsFile(fs, block, nameBuffer, file);
+    }
+}

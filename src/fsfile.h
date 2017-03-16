@@ -5,5 +5,7 @@
 
 long long createFile(Filesystem* fs, FsDirectory* parentDir, char* name);
 int createFileAtBlock(Filesystem* fs, FsDirectory* parentDir, unsigned int blockNum, char* name);
+int openBlockAsFile(Filesystem* fs, unsigned int blockNum, char* fileName, FsFile* file);
+int getFsFileFromEntry(Filesystem* fs, FsDirectoryEntry* entry, FsFile* file);
 
 #endif /* FSFILE_H */
