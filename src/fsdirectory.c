@@ -118,14 +118,23 @@ int countDirectoryEntries(FsDirectory* dir) {
 }
 
 FsDirectoryEntry* findDirEntryByName(FsDirectory* dir, char* name) {
+    static char nameBuff[MAX_DIR_ENTRY_NAME_LENGTH + 1];
     int i = 0;
-    int namelen = MIN(MAX_DIR_ENTRY_NAME_LENGTH, strlen(name));
     FsDirectoryEntry* entries = dir->dirEntries;
+
+    memset(nameBuff, '\0', MAX_DIR_ENTRY_NAME_LENGTH + 1);
 
     for( ; i < MAX_DIR_ENTRIES; i++) {
         FsDirectoryEntry* entry = &entries[i];
-        if(!isDirEntryFree(entry) && strncmp(entry->name, name, namelen) == 0)
+        if(isDirEntryFree(entry)) {
+            continue;
+        }
+
+        /* convert entry name into a c string */
+        memcpy(nameBuff, entry->name, MAX_DIR_ENTRY_NAME_LENGTH);
+        if(strcmp(nameBuff, name) == 0) {
             return entry;
+        }
     }
 
     return NULL;
@@ -219,6 +228,9 @@ int addEntrytoDirectory(FsDirectory* parentDir, int childtrack, int childSector,
 
     entry->markerAndTrackNum =  VALID_DIR_ENTRY_MASK | (childtrack & DIR_ENTRY_TRACK_MASK) | (isFile ? DIR_ENTRY_TYPE_MASK : 0x00);
     entry->sectorNum = childSector & DIR_ENTRY_SECTOR_MASK;
+
+    /* Clear the name field, then copy new data over (unused characters must be null) */
+    memset(entry->name, '\0', MAX_DIR_ENTRY_NAME_LENGTH);
     memcpy(entry->name, childName, MIN(MAX_DIR_ENTRY_NAME_LENGTH, strlen(childName)));
 
     return 1;
