@@ -80,3 +80,27 @@ int getFsFileFromEntry(Filesystem* fs, FsDirectoryEntry* entry, FsFile* file) {
         return openBlockAsFile(fs, block, nameBuffer, file);
     }
 }
+
+unsigned int calculateFileSize(Filesystem* fs, FsFile* file) {
+    /* Account for the metadata sector */
+    unsigned int size = SECTOR_SIZE;
+    FsFileMetadata* metadata = file->fileMetadata;
+    int i = 0;
+
+    if(!file || !metadata) {
+        return 0;
+    }
+
+    for( ; i < MAX_FILE_BLOCKS; i++) {
+        FsFileBlockPointer* blockPointer = &metadata->filePointers[i];
+        if(!blockPointer->track) {
+            continue;
+        }
+
+        if(!isSectorFree(fs, blockPointer->track, blockPointer->sector)) {
+            size += SECTOR_SIZE;
+        }
+    }
+
+    return size;
+}
