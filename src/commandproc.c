@@ -119,7 +119,7 @@ void mkdirCmd(char* dirName) {
         return;
     }
 
-    allocateAndAddDirectoryEntryToDirectory(globalFileSystem, dir, dirName);
+    allocateAndAddEntryToDirectory(globalFileSystem, dir, dirName, 0);
 }
 
 void lsCmd() {

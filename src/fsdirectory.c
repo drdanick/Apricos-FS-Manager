@@ -7,7 +7,6 @@
 #include "filesystem.h"
 
 long long createDirectory(Filesystem* fs) {
-    /* Allocate the block */
     long long directoryBlock = findNextFreeBlock(fs, 0);
 
     if(directoryBlock != -1 && createDirectoryAtBlock(fs, directoryBlock)) {
@@ -177,23 +176,23 @@ int removeDirEntryByName(FsDirectory* dir, char* name) {
     return removeDirEntry(entry);
 }
 
-int allocateAndAddDirectoryEntryToDirectory(Filesystem* fs, FsDirectory* parentDir, char* childName) {
+int allocateAndAddEntryToDirectory(Filesystem* fs, FsDirectory* parentDir, char* childName, char isFile) {
     long long blockNum = createDirectory(fs);
 
     if(blockNum < 0)
         return 0;
 
-    return addDirectoryBlockEntrytoDirectory(parentDir, blockNum, childName);
+    return addBlockEntrytoDirectory(parentDir, blockNum, childName, isFile);
 }
 
-int addDirectoryBlockEntrytoDirectory(FsDirectory* parentDir, unsigned int childBlock, char* childName) {
+int addBlockEntrytoDirectory(FsDirectory* parentDir, unsigned int childBlock, char* childName, char isFile) {
     int childTrack = BLOCK_TO_TRACK(childBlock);
     int childSector = BLOCK_TO_SECTOR(childBlock);
 
-    return addDirectoryEntrytoDirectory(parentDir, childTrack, childSector, childName);
+    return addEntrytoDirectory(parentDir, childTrack, childSector, childName, isFile);
 }
 
-int addDirectoryEntrytoDirectory(FsDirectory* parentDir, int childtrack, int childSector, char* childName) {
+int addEntrytoDirectory(FsDirectory* parentDir, int childtrack, int childSector, char* childName, char isFile) {
     FsDirectoryEntry* entry;
     int childIndex = findNextFreeDirEntry(parentDir);
 
@@ -205,7 +204,7 @@ int addDirectoryEntrytoDirectory(FsDirectory* parentDir, int childtrack, int chi
 
     entry = &parentDir->dirEntries[childIndex];
 
-    entry->markerAndTrackNum =  VALID_DIR_ENTRY_MASK | (childtrack & DIR_ENTRY_TRACK_MASK);
+    entry->markerAndTrackNum =  VALID_DIR_ENTRY_MASK | (childtrack & DIR_ENTRY_TRACK_MASK) | (isFile ? DIR_ENTRY_TYPE_MASK : 0x00);
     entry->sectorNum = childSector & DIR_ENTRY_SECTOR_MASK;
     memcpy(entry->name, childName, MIN(MAX_DIR_ENTRY_NAME_LENGTH, strlen(childName)));
 
