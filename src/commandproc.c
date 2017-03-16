@@ -178,8 +178,11 @@ int toggleexecCmd(char* entryName) {
 }
 
 void rmCmd(char* entryName) {
+    FsDirectoryEntry* entry;
+    FsFile file;
+
     entryName = strToUpper(entryName);
-    FsDirectoryEntry* entry = findDirEntryByName(getWorkingDirectory(globalFileSystem), entryName);
+    entry = findDirEntryByName(getWorkingDirectory(globalFileSystem), entryName);
 
     if(!entry) {
         printf("Specified entry does not exist\n");
@@ -199,8 +202,24 @@ void rmCmd(char* entryName) {
         }
     }
 
-    if(!freeSector(globalFileSystem, entry->markerAndTrackNum & TRACK_ID_MASK, entry->sectorNum & SECTOR_ID_MASK) || !removeDirEntry(entry)) {
+    /* If the entry is a file, we need to clear its allocated blocks */
+    if(entry->markerAndTrackNum & DIR_ENTRY_TYPE_MASK){
+        if(
+            !(getFsFileFromEntry(globalFileSystem, entry, &file))
+            || !(deleteAllFileBlocks(globalFileSystem, &file))){
+
+            printf("Error removing entry\n");
+            return;
+        }
+    }
+
+    /* Free the metadata sector and remove the entry from the parent dir */
+    if(
+        !freeSector(globalFileSystem, entry->markerAndTrackNum & TRACK_ID_MASK, entry->sectorNum & SECTOR_ID_MASK)
+        || !removeDirEntry(entry)){
+
         printf("Error removing entry\n");
+        return;
     }
 }
 
