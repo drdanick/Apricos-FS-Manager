@@ -104,6 +104,19 @@ int findNextFreeDirEntry(FsDirectory* dir) {
     return -1;
 }
 
+int countDirectoryEntries(FsDirectory* dir) {
+    int i = 0;
+    int count = 0;
+    for( ; i < MAX_DIR_ENTRIES; i++) {
+        if(isDirEntryFree(&dir->dirEntries[i])) {
+            break;
+        }
+        count++;
+    }
+
+    return count;
+}
+
 FsDirectoryEntry* findDirEntryByName(FsDirectory* dir, char* name) {
     int i = 0;
     int namelen = MIN(MAX_DIR_ENTRY_NAME_LENGTH, strlen(name));

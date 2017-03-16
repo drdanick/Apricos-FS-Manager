@@ -13,6 +13,7 @@ void printDirectoryListing(FsDirectory* dir, char* prefix);
 FsDirectory getFsDirectoryFromEntry(Filesystem* fs, FsDirectoryEntry* entry);
 int isDirEntryFree(FsDirectoryEntry* entry);
 int findNextFreeDirEntry(FsDirectory* dir);
+int countDirectoryEntries(FsDirectory* dir);
 FsDirectoryEntry* findDirEntryByName(FsDirectory* dir, char* name);
 int removeDirEntry(FsDirectoryEntry* entry);
 int removeDirEntryByName(FsDirectory* dir, char* name);
