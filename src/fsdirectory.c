@@ -109,7 +109,7 @@ int countDirectoryEntries(FsDirectory* dir) {
     int count = 0;
     for( ; i < MAX_DIR_ENTRIES; i++) {
         if(isDirEntryFree(&dir->dirEntries[i])) {
-            break;
+            continue;
         }
         count++;
     }
