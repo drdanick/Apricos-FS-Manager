@@ -11,6 +11,7 @@ static const char bootSignature[] = {0xAA, 0x55};
 
 Filesystem* mountFilesystem(char* filePath) {
     Filesystem* fs = malloc(sizeof(Filesystem));
+    FsDirectory rootDir;
 
     fs->diskImagePath = malloc(sizeof(char) * strlen(filePath) + 1);
     strcpy(fs->diskImagePath, filePath);
@@ -28,7 +29,12 @@ Filesystem* mountFilesystem(char* filePath) {
     fs->currentPathUnit = 0;
 
     /* open and push the root directory */
-    pushDirectoryToStack(fs, openBlockAsDirectory(fs, TRACK_AND_SECTOR_TO_BLOCK(ROOT_FOLDER_TRACK, ROOT_FOLDER_SECTOR), ""));
+    if(!openBlockAsDirectory(fs, TRACK_AND_SECTOR_TO_BLOCK(ROOT_FOLDER_TRACK, ROOT_FOLDER_SECTOR), "", &rootDir)) {
+        unmountFilesystem(fs, 0);
+        return NULL;
+    }
+
+    pushDirectoryToStack(fs, rootDir);
 
     return fs;
 }

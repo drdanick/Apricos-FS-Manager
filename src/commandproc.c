@@ -154,8 +154,7 @@ int cdCmd(char* dir) {
             return 0;
         }
 
-        childDir = getFsDirectoryFromEntry(globalFileSystem, dirEntry);
-        if(!childDir.rawData) {
+        if(!getFsDirectoryFromEntry(globalFileSystem, dirEntry, &childDir)) {
             return 0;
         }
 
@@ -189,8 +188,8 @@ void rmCmd(char* entryName) {
 
     if(!(entry->markerAndTrackNum & DIR_ENTRY_TYPE_MASK)) {
         /* entry s a directory, so make sure it's empty */
-        FsDirectory dir = getFsDirectoryFromEntry(globalFileSystem, entry);
-        if(dir.rawData == NULL) {
+        FsDirectory dir;
+        if(!getFsDirectoryFromEntry(globalFileSystem, entry, &dir)) {
             printf("Unnable to remove directory\n");
             return;
         }

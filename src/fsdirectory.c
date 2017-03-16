@@ -52,40 +52,32 @@ FsDirectory popDirectoryFromStack(Filesystem* fs) {
     return directory;
 }
 
-FsDirectory openBlockAsDirectory(Filesystem* fs, unsigned int blockNum, char* dirName) {
-    FsDirectory directory;
-    directory.name = NULL;
+int openBlockAsDirectory(Filesystem* fs, unsigned int blockNum, char* dirName, FsDirectory* dir) {
 
-    if(isBlockFree(fs, blockNum)) {
-        directory.name = NULL;
-        directory.rawData = NULL;
-        directory.dirEntries = NULL;
-    } else {
+    if(!isBlockFree(fs, blockNum)) {
         char* dirMetadataSector = getBlockData(fs->diskData, blockNum);
 
-        directory.name = dirName;
-        directory.block = blockNum;
-        directory.rawData = dirMetadataSector;
-        directory.dirEntries = (FsDirectoryEntry*) dirMetadataSector;
+        dir->name = dirName;
+        dir->block = blockNum;
+        dir->rawData = dirMetadataSector;
+        dir->dirEntries = (FsDirectoryEntry*) dirMetadataSector;
+
+        return 1;
     }
 
-    return directory;
+    return 0;
 }
 
-FsDirectory getFsDirectoryFromEntry(Filesystem* fs, FsDirectoryEntry* entry) {
-    FsDirectory directory;
+int getFsDirectoryFromEntry(Filesystem* fs, FsDirectoryEntry* entry, FsDirectory* dir) {
 
     if(!fs || !entry || entry->markerAndTrackNum & DIR_ENTRY_TYPE_MASK) {
-        directory.name = NULL;
-        directory.rawData = NULL;
-        directory.dirEntries = NULL;
-        return directory;
+        return 0;
     } else {
         unsigned int track = entry->markerAndTrackNum & TRACK_ID_MASK;
         unsigned int sector = entry->sectorNum & SECTOR_ID_MASK;
         unsigned int block = TRACK_AND_SECTOR_TO_BLOCK(track, sector);
 
-        return openBlockAsDirectory(fs, block, entry->name);
+        return openBlockAsDirectory(fs, block, entry->name, dir);
     }
 }
 
