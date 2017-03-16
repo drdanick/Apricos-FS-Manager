@@ -41,7 +41,6 @@ int createFileAtBlock(Filesystem* fs, FsDirectory* parentDir, unsigned int block
     return 1;
 }
 
-/* TODO: Add function to clear all blocks allocated for a file */
 int openBlockAsFile(Filesystem* fs, unsigned int blockNum, char* fileName, FsFile* file) {
     if(!file) {
         return 0;
@@ -103,4 +102,29 @@ unsigned int calculateFileSize(Filesystem* fs, FsFile* file) {
     }
 
     return size;
+}
+
+int deleteAllFileBlocks(Filesystem* fs, FsFile* file) {
+    FsFileMetadata* metadata = file->fileMetadata;
+    int i = 0;
+    int error = 0;
+
+    for( ; i < MAX_FILE_BLOCKS; i++) {
+        FsFileBlockPointer* blockPointer = &metadata->filePointers[i];
+        if(!blockPointer->track) {
+            continue;
+        }
+
+        if(!freeSector(fs, blockPointer->track, blockPointer->sector)) {
+            error = 1;
+            continue;
+        }
+
+        blockPointer->track = 0;
+        blockPointer->sector = 0;
+    }
+
+    metadata->fileSize = calculateFileSize(fs, file) & FILE_METADATA_SIZE_MASK;
+
+    return !error;
 }
