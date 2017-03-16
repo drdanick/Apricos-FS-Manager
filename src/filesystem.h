@@ -30,6 +30,9 @@
 #define MAX_DIR_ENTRY_NAME_LENGTH 6
 #define MAX_DIR_ENTRIES           32
 
+/* File Metadata constants */
+#define MAX_FILE_BLOCKS 127
+
 
 /*
  * Data structures
@@ -38,8 +41,8 @@
 /* NOTE: This maps directly to a pre-existing memory structure,
  * so care should be taken not to change the structs byte alignment. */
 typedef struct {
-    unsigned int markerAndTrackNum: 8;
-    unsigned int sectorNum: 8;
+    char markerAndTrackNum;
+    char sectorNum;
     char name[MAX_DIR_ENTRY_NAME_LENGTH];
 } FsDirectoryEntry;
 
@@ -49,6 +52,16 @@ typedef struct {
     char* rawData;
     FsDirectoryEntry* dirEntries;
 } FsDirectory;
+
+typedef struct {
+    char track;
+    char sector;
+} FsFileBlockPointer;
+
+typedef struct {
+    int fileSize: 16;
+    FsFileBlockPointer filePointers[MAX_FILE_BLOCKS];
+} FsFile;
 
 typedef struct {
     char volumeName[VOLUME_NAME_LENGTH];
