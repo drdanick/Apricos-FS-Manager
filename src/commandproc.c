@@ -233,6 +233,37 @@ int touchCmd(char* fileName) {
     return 1;
 }
 
+void loadFileCmd(char* entryName, char* fileName) {
+    long long dataRead;
+    FsDirectoryEntry* entry;
+    FsFile file;
+    entryName = strToUpper(entryName);
+
+    entry = findDirEntryByName(getWorkingDirectory(globalFileSystem), entryName);
+    if(!entry) {
+        printf("No such directory entry\n");
+        return;
+    }
+
+    if(!(entry->markerAndTrackNum & DIR_ENTRY_TYPE_MASK)) {
+        printf("Cannot load data into a directory\n");
+        return;
+    }
+
+    if(!getFsFileFromEntry(globalFileSystem, entry, &file)) {
+        printf("Unnable to load file entry\n");
+        return;
+    }
+
+    dataRead = appendDataFromFileStream(globalFileSystem, &file, fileName);
+
+    if(dataRead >= 0) {
+        printf("Read %lld bytes\n", dataRead);
+    } else {
+        printf("Could not read from file\n");
+    }
+}
+
 int processLine(char* line) {
     char* command;
     command = strtok(line, " \n");
@@ -361,6 +392,15 @@ int processLine(char* line) {
             }
         } else {
             rmCmd(entryName);
+        }
+    }
+    else if(strcmp("loadfile", strToLower(command)) == 0) {
+        char* entryName = strtok(NULL, " \n");
+        char* fileName = strtok(NULL, " \n");
+        if(!entryName || !fileName || strlen(entryName) == 0 || strlen(fileName) == 0) {
+            printf("Invalid entry and or filename\n");
+        } else {
+            loadFileCmd(entryName, fileName);
         }
     }
     else {
