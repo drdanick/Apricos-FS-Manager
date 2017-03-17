@@ -1,4 +1,5 @@
 #include <string.h>
+#include <stdio.h>
 #include "fsfile.h"
 #include "filesystem.h"
 #include "fsdirectory.h"
@@ -36,7 +37,7 @@ int createFileAtBlock(Filesystem* fs, FsDirectory* parentDir, unsigned int block
     }
 
     /* Initialize the size field */
-    ((FsFileMetadata*)fileMetadata)->fileSize = SECTOR_SIZE & FILE_METADATA_SIZE_MASK;
+    ((FsFileMetadata*)fileMetadata)->fileSize = 0;
 
     return 1;
 }
@@ -80,29 +81,97 @@ int getFsFileFromEntry(Filesystem* fs, FsDirectoryEntry* entry, FsFile* file) {
     }
 }
 
-unsigned int calculateFileSize(Filesystem* fs, FsFile* file) {
-    /* Account for the metadata sector */
-    unsigned int size = SECTOR_SIZE;
-    FsFileMetadata* metadata = file->fileMetadata;
+int getIndexOfFileBlock(FsFile* file, FsFileBlockPointer* blockPointer) {
     int i = 0;
 
-    if(!file || !metadata) {
-        return 0;
-    }
-
     for( ; i < MAX_FILE_BLOCKS; i++) {
-        FsFileBlockPointer* blockPointer = &metadata->filePointers[i];
-        if(!blockPointer->track) {
-            continue;
-        }
-
-        if(!isSectorFree(fs, blockPointer->track, blockPointer->sector)) {
-            size += SECTOR_SIZE;
+        if(&file->fileMetadata->filePointers[i] == blockPointer) {
+            return i;
         }
     }
 
-    return size;
+    return -1;
 }
+
+FsFileBlockPointer* getNextFileBlock(Filesystem* fs, FsFile* file, FsFileBlockPointer* currentBlockPointer) {
+    int i = 0;
+
+    if(currentBlockPointer) {
+        getIndexOfFileBlock(file, currentBlockPointer);
+    }
+
+    if(i == -1) {
+        return NULL;
+    }
+
+    for(i += 1; i < MAX_FILE_BLOCKS; i++) {
+        FsFileBlockPointer* nextBlockPointer = &file->fileMetadata->filePointers[i];
+        if(nextBlockPointer->track != 0 && !isSectorFree(fs, nextBlockPointer->track, nextBlockPointer->track)) {
+            return nextBlockPointer;
+        }
+    }
+
+    return NULL;
+}
+
+FsFileBlockPointer* getLastAllocatedFileBlock(Filesystem* fs, FsFile* file) {
+    int i = 0;
+    FsFileBlockPointer* block = NULL;
+    do {
+        FsFileBlockPointer* nextBlock = &file->fileMetadata->filePointers[i];
+
+        if(isSectorFree(fs, nextBlock->track, nextBlock->sector)) {
+            break;
+        }
+
+        block = nextBlock;
+    } while(++i < MAX_FILE_BLOCKS);
+
+    return block;
+}
+
+int allocateNewFileData(Filesystem* fs, FsFile* file, unsigned int numBytes, FsFileAllocatedSpacePointer* outBlocks, int maxBlocks) {
+    unsigned int freeFileSpace = (MAX_FILE_BLOCKS * SECTOR_SIZE) - file->fileMetadata->fileSize;
+    int residualExistingFreeSpace = freeFileSpace % SECTOR_SIZE;
+    int newNumBytesRequired = numBytes - residualExistingFreeSpace;
+    int newBlocksRequired = (int)((newNumBytesRequired - 1) / SECTOR_SIZE) + 1;
+    int numChunks = 0;
+
+    /* Clamp the new number of bytes required if we require less than what's currently available */
+    newNumBytesRequired = newNumBytesRequired < 0 ? 0 : newNumBytesRequired;
+
+    /* If the amount of space we need cannot be allocated for the current file, return -1 */
+    if(numBytes > freeFileSpace) {
+        return -1;
+    }
+
+    /* If the number of blocks required is less than maxBlocks, return -1 */
+    if(newNumBytesRequired && newBlocksRequired > maxBlocks - 1) {
+        return -1;
+    }
+
+    if(file->fileMetadata->fileSize && residualExistingFreeSpace) {
+        int allocatedResidualData = MIN(numBytes, (unsigned int)residualExistingFreeSpace);
+        FsFileBlockPointer* lastBlock = getLastAllocatedFileBlock(fs, file);
+        char* ptr = getSectorData(fs->diskData, lastBlock->track, lastBlock->sector);
+        ptr = &ptr[SECTOR_SIZE - residualExistingFreeSpace];
+
+        outBlocks[numChunks].size = allocatedResidualData;
+        outBlocks[numChunks].dataPointer = ptr;
+        numChunks++;
+    }
+
+    for( ; numChunks < newBlocksRequired; numChunks++) {
+        long long newBlock = allocateNewFileBlock(fs, file);
+        outBlocks[numChunks].dataPointer = getBlockData(fs->diskData, newBlock);
+        outBlocks[numChunks].size = newNumBytesRequired <= SECTOR_SIZE ? newNumBytesRequired : (char)(SECTOR_SIZE & 0x0FF);
+        newNumBytesRequired -= SECTOR_SIZE;
+    }
+
+    file->fileMetadata->fileSize += numBytes;
+    return numChunks;
+}
+
 
 long long allocateNewFileBlock(Filesystem* fs, FsFile* file) {
     FsFileMetadata* metadata = file->fileMetadata;
@@ -120,8 +189,6 @@ long long allocateNewFileBlock(Filesystem* fs, FsFile* file) {
 
             metadata->filePointers[i].track = track;
             metadata->filePointers[i].sector = sector;
-
-            metadata->fileSize += SECTOR_SIZE;
 
             return newBlock;
         }
@@ -150,7 +217,43 @@ int deleteAllFileBlocks(Filesystem* fs, FsFile* file) {
         blockPointer->sector = 0;
     }
 
-    metadata->fileSize = calculateFileSize(fs, file) & FILE_METADATA_SIZE_MASK;
+    metadata->fileSize = 0;
 
     return !error;
+}
+
+long long appendDataFromFileStream(Filesystem* fs, FsFile* file, char* fileName) {
+    static FsFileAllocatedSpacePointer newData[MAX_FILE_BLOCKS];
+    static char diskBuffer[SECTOR_SIZE];
+    long long totalBytesRead = 0;
+    int currBytesRead;
+
+    FILE* dataFile = fopen(fileName, "rb");
+    if(!dataFile) {
+        printf("cannot open %s\n",fileName);
+        return -1;
+    }
+
+
+
+    while(currBytesRead = fread(diskBuffer, sizeof(char), sizeof(diskBuffer), dataFile), currBytesRead) {
+        int newDataBlocks = allocateNewFileData(fs, file, currBytesRead, newData, MAX_FILE_BLOCKS);
+        int bytesWritten = 0;
+        int i = 0;
+        totalBytesRead += currBytesRead;
+
+        if(newDataBlocks < 1) {
+            fclose(dataFile);
+            return -1;
+        }
+
+        /* Copy data into the given blocks */
+        for( ; i < newDataBlocks; i++) {
+            memcpy(newData[i].dataPointer, &diskBuffer[bytesWritten], newData[i].size);
+            bytesWritten += newData[i].size;
+        }
+    }
+
+    fclose(dataFile);
+    return totalBytesRead;
 }

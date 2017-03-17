@@ -66,6 +66,14 @@ typedef struct {
     FsFileBlockPointer filePointers[MAX_FILE_BLOCKS];
 } FsFileMetadata;
 
+/* Used to specify a sequence of free bytes within an 
+ * existing block
+ */
+typedef struct {
+    char* dataPointer;
+    unsigned int size : 16;
+} FsFileAllocatedSpacePointer;
+
 typedef struct {
     char name[MAX_DIR_ENTRY_NAME_LENGTH + 1];
     char* rawData;
