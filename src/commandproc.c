@@ -235,7 +235,6 @@ int touchCmd(char* fileName) {
 
 int processLine(char* line) {
     char* command;
-    strToLower(line);
     command = strtok(line, " \n");
 
     if(command == NULL) {
@@ -244,19 +243,19 @@ int processLine(char* line) {
 
     /* Execute the command */
 
-    if(strcmp("exit", command) == 0) {
+    if(strcmp("exit", strToLower(command)) == 0) {
         return -1;
     }
-    else if(strcmp("status", command) == 0) {
+    else if(strcmp("status", strToLower(command)) == 0) {
         printStatus();
     }
-    else if(strcmp("mount", command) == 0) {
+    else if(strcmp("mount", strToLower(command)) == 0) {
         mountCmd(strtok(NULL, " \n"));
     }
-    else if(strcmp("unmount", command) == 0) {
+    else if(strcmp("unmount", strToLower(command)) == 0) {
         unmountCmd();
     }
-    else if(strcmp("peek", command) == 0) {
+    else if(strcmp("peek", strToLower(command)) == 0) {
         char* peekarg;
         unsigned int track;
         unsigned int sector;
@@ -273,7 +272,7 @@ int processLine(char* line) {
             }
         }
     }
-    else if(strcmp("format", command) == 0) {
+    else if(strcmp("format", strToLower(command)) == 0) {
         char* volnamearg = strtok(NULL, "\n");
         if(!globalFileSystem) {
             printf("No FileSystem mounted\n");
@@ -289,7 +288,7 @@ int processLine(char* line) {
             }
         }
     }
-    else if(strcmp("mkdir", command) == 0) {
+    else if(strcmp("mkdir", strToLower(command)) == 0) {
         char* dirName = strtok(NULL, " \n");
         if(dirName) {
             mkdirCmd(dirName);
@@ -297,14 +296,14 @@ int processLine(char* line) {
             printf("Invalid directory name.\n");
         }
     }
-    else if(strcmp("ls", command) == 0 || strcmp("dir", command) == 0) {
+    else if(strcmp("ls", strToLower(command)) == 0 || strcmp("dir", strToLower(command)) == 0) {
         if(globalFileSystem) {
             lsCmd();
         } else {
             printf("No filesystem mounted!\n");
         }
     }
-    else if(strcmp("cd", command) == 0) {
+    else if(strcmp("cd", strToLower(command)) == 0) {
         char* dir;
         int error = 0;
         FsDirectory* pathStackCopy = savePathStack(globalFileSystem);
@@ -324,7 +323,7 @@ int processLine(char* line) {
             printf("Could not change to specified directory.\n");
         }
     }
-    else if(strcmp("toggleexec", command) == 0) {
+    else if(strcmp("toggleexec", strToLower(command)) == 0) {
         char* entryName = strtok(NULL, " \n");
         if(!entryName || strlen(entryName) == 0) {
             printf("Invalid directory entry\n");
@@ -338,7 +337,7 @@ int processLine(char* line) {
             }
         }
     }
-    else if(strcmp("rm", command) == 0) {
+    else if(strcmp("rm", strToLower(command)) == 0) {
         char* entryName = strtok(NULL, " \n");
         if(globalFileSystem) {
             if(!entryName || strlen(entryName) == 0) {
@@ -350,7 +349,7 @@ int processLine(char* line) {
             printf("No filesystem mounted!\n");
         }
     }
-    else if(strcmp("touch", command) == 0) {
+    else if(strcmp("touch", strToLower(command)) == 0) {
         char* entryName = strtok(NULL, " \n");
         if(globalFileSystem) {
             if(!entryName || strlen(entryName) == 0) {
