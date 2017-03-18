@@ -94,14 +94,14 @@ int getIndexOfFileBlock(FsFile* file, FsFileBlockPointer* blockPointer) {
 }
 
 FsFileBlockPointer* getNextFileBlock(Filesystem* fs, FsFile* file, FsFileBlockPointer* currentBlockPointer) {
-    int i = 0;
+    int i = -1;
 
     if(currentBlockPointer) {
-        getIndexOfFileBlock(file, currentBlockPointer);
-    }
+        i = getIndexOfFileBlock(file, currentBlockPointer);
 
-    if(i == -1) {
-        return NULL;
+        if(i == -1) {
+            return NULL;
+        }
     }
 
     for(i += 1; i < MAX_FILE_BLOCKS; i++) {
@@ -256,4 +256,28 @@ long long appendDataFromFileStream(Filesystem* fs, FsFile* file, char* fileName)
 
     fclose(dataFile);
     return totalBytesRead;
+}
+
+long long writeFileDataToFileStream(Filesystem* fs, FsFile* file, char* fileName) {
+    unsigned int remainingData = file->fileMetadata->fileSize;
+    FsFileBlockPointer* nextFileBlock = NULL;
+
+    FILE* dataFile = fopen(fileName, "wb");
+    if(!dataFile) {
+        printf("Cannot open %s\n", fileName);
+        return -1;
+    }
+
+    while(nextFileBlock = getNextFileBlock(fs, file, nextFileBlock), nextFileBlock) {
+        int dataToCopy = remainingData;
+        if(remainingData > SECTOR_SIZE) {
+            dataToCopy = SECTOR_SIZE;
+        }
+
+        fwrite(getSectorData(fs->diskData, nextFileBlock->track, nextFileBlock->sector), sizeof(char), dataToCopy, dataFile);
+        remainingData -= dataToCopy;
+    }
+
+    fclose(dataFile);
+    return file->fileMetadata->fileSize - remainingData;
 }

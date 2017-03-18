@@ -14,5 +14,6 @@ int allocateNewFileData(Filesystem* fs, FsFile* file, unsigned int numBytes, FsF
 long long allocateNewFileBlock(Filesystem* fs, FsFile* file);
 int deleteAllFileBlocks(Filesystem* fs, FsFile* file);
 long long appendDataFromFileStream(Filesystem* fs, FsFile* file, char* fileName);
+long long writeFileDataToFileStream(Filesystem* fs, FsFile* file, char* fileName);
 
 #endif /* FSFILE_H */

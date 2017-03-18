@@ -62,7 +62,7 @@ typedef struct {
 } FsFileBlockPointer;
 
 typedef struct {
-    int fileSize: 16;
+    unsigned int fileSize: 16;
     FsFileBlockPointer filePointers[MAX_FILE_BLOCKS];
 } FsFileMetadata;
 
