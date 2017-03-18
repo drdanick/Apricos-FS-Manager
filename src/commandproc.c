@@ -264,6 +264,37 @@ void loadFileCmd(char* entryName, char* fileName) {
     }
 }
 
+void saveFileCmd(char* entryName, char* fileName) {
+    long long dataWritten;
+    FsDirectoryEntry* entry;
+    FsFile file;
+    entryName = strToUpper(entryName);
+
+    entry = findDirEntryByName(getWorkingDirectory(globalFileSystem), entryName);
+    if(!entry) {
+        printf("No such directory entry\n");
+        return;
+    }
+
+    if(!(entry->markerAndTrackNum & DIR_ENTRY_TYPE_MASK)) {
+        printf("Cannot save data from a directory\n");
+        return;
+    }
+
+    if(!getFsFileFromEntry(globalFileSystem, entry, &file)) {
+        printf("Unnable to load file entry for saving\n");
+        return;
+    }
+
+    dataWritten = writeFileDataToFileStream(globalFileSystem, &file, fileName);
+
+    if(dataWritten >= 0) {
+        printf("Wrote %lld bytes\n", dataWritten);
+    } else {
+        printf("Could not write to file\n");
+    }
+}
+
 int processLine(char* line) {
     char* command;
     command = strtok(line, " \n");
@@ -401,6 +432,15 @@ int processLine(char* line) {
             printf("Invalid entry and or filename\n");
         } else {
             loadFileCmd(entryName, fileName);
+        }
+    }
+    else if(strcmp("savefile", strToLower(command)) == 0) {
+        char* entryName = strtok(NULL, " \n");
+        char* fileName = strtok(NULL, " \n");
+        if(!entryName || !fileName || strlen(entryName) == 0 || strlen(fileName) == 0) {
+            printf("Invalid entry and or filename\n");
+        } else {
+            saveFileCmd(entryName, fileName);
         }
     }
     else {
