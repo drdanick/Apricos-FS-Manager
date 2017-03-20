@@ -11,7 +11,6 @@ static const char bootSignature[] = {0xAA, 0x55};
 
 Filesystem* mountFilesystem(char* filePath) {
     Filesystem* fs = malloc(sizeof(Filesystem));
-    FsDirectory rootDir;
 
     fs->diskImagePath = malloc(sizeof(char) * strlen(filePath) + 1);
     strcpy(fs->diskImagePath, filePath);
@@ -26,15 +25,7 @@ Filesystem* mountFilesystem(char* filePath) {
     fs->volumeInfo = (VolumeInfo*)getSectorData(fs->diskData, 0, VOLUME_INFORMATION_SEGMENT);
     fs->rawVolumeInfo = getSectorData(fs->diskData, 0, VOLUME_INFORMATION_SEGMENT);
 
-    fs->currentPathUnit = 0;
-
-    /* open and push the root directory */
-    if(!openBlockAsDirectory(fs, TRACK_AND_SECTOR_TO_BLOCK(ROOT_FOLDER_TRACK, ROOT_FOLDER_SECTOR), "", &rootDir)) {
-        unmountFilesystem(fs, 0);
-        return NULL;
-    }
-
-    pushDirectoryToStack(fs, rootDir);
+    resetDirectoryStack(fs);
 
     return fs;
 }
@@ -46,6 +37,16 @@ void unmountFilesystem(Filesystem* fs, char save) {
     freeDiskData(fs->diskData);
     free(fs->diskImagePath);
     free(fs);
+}
+
+void resetDirectoryStack(Filesystem* fs) {
+    FsDirectory rootDir;
+    clearDirectoryStack(fs);
+
+    /* open and push the root directory */
+    if(openBlockAsDirectory(fs, TRACK_AND_SECTOR_TO_BLOCK(ROOT_FOLDER_TRACK, ROOT_FOLDER_SECTOR), "", &rootDir)) {
+        pushDirectoryToStack(fs, rootDir);
+    }
 }
 
 void clearDirectoryStack(Filesystem* fs) {
@@ -73,11 +74,14 @@ void formatFilesystem(Filesystem* fs, char* volumeName) {
     /* make volume bootable */
     memcpy(&(fs->rawVolumeInfo[SECTOR_SIZE - BOOT_SIGNATURE_SIZE]), bootSignature, BOOT_SIGNATURE_SIZE);
 
-    /* Allocate the first track of data in the space bitmap */
+    /* allocate the first track of data in the space bitmap */
     autoAllocateBlocks(fs, SECTORS_PER_TRACK, allocatedBlocks);
 
     /* create the root directory */
     createDirectory(fs);
+
+    /* reset the directory stack to effectively mount this volume */
+    resetDirectoryStack(fs);
 }
 
 void printPathString(Filesystem* fs) {

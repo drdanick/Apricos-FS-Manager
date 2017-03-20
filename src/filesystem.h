@@ -101,6 +101,7 @@ typedef struct {
 
 Filesystem* mountFilesystem(char* filePath);
 void unmountFilesystem(Filesystem* fs, char save);
+void resetDirectoryStack(Filesystem* fs);
 void clearDirectoryStack(Filesystem* fs);
 FsDirectory* getWorkingDirectory(Filesystem* fs);
 void formatFilesystem(Filesystem* fs, char* volumeName);
