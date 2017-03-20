@@ -6,8 +6,8 @@
 #include "allocator.h"
 #include "fsdirectory.h"
 
-#define BOOT_SIGNATURE_SIZE 2
-static const char bootSignature[] = {0xAA, 0x55};
+const char bootSignature[] = {0xAA, 0x55};
+const char diskSignature[] = {0xC0, 0x30, 0x0C, 0x03};
 
 Filesystem* mountFilesystem(char* filePath) {
     Filesystem* fs = malloc(sizeof(Filesystem));

@@ -18,6 +18,8 @@
 #define VOLUME_NAME_LENGTH 8
 #define ROOT_FOLDER_TRACK  1
 #define ROOT_FOLDER_SECTOR 0
+#define BOOT_SIGNATURE_SIZE 2
+#define DISK_SIGNATURE_SIZE 4
 
 /* Directory entry masks */
 #define VALID_DIR_ENTRY_MASK      0x80
@@ -81,6 +83,7 @@ typedef struct {
 } FsFile;
 
 typedef struct {
+    char diskSignature[DISK_SIGNATURE_SIZE];
     char volumeName[VOLUME_NAME_LENGTH];
 } VolumeInfo;
 
@@ -93,6 +96,12 @@ typedef struct {
     FsDirectory pathStack[MAX_PATH_DEPTH];
     int currentPathUnit; /* Always points to the next free slot */
 } Filesystem;
+
+/**
+ * Constants
+ */
+extern const char bootSignature[];
+extern const char diskSignature[];
 
 
 /*
