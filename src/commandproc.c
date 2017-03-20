@@ -297,7 +297,17 @@ void saveFileCmd(char* entryName, char* fileName) {
 
 int newdiskCmd(char* fileName) {
     char* diskData = createDiskData();
-    if(!diskData || !saveDiskFile(fileName, diskData)) {
+    VolumeInfo* volumeInfo;
+
+    if(!diskData){
+        return 0;
+    }
+
+    volumeInfo = (VolumeInfo*)getSectorData(diskData, 0, VOLUME_INFORMATION_SEGMENT);
+    memcpy(volumeInfo->diskSignature, diskSignature, DISK_SIGNATURE_SIZE);
+
+    if(!saveDiskFile(fileName, diskData)) {
+        freeDiskData(diskData);
         return 0;
     }
 
