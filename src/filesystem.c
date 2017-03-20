@@ -68,6 +68,9 @@ void formatFilesystem(Filesystem* fs, char* volumeName) {
     /* clear volume information */
     memset(fs->rawVolumeInfo, 0, SECTOR_SIZE);
 
+    /* set disk signature */
+    memcpy(fs->volumeInfo->diskSignature, diskSignature, DISK_SIGNATURE_SIZE);
+
     /* set volume name */
     memcpy(fs->volumeInfo->volumeName, volumeName, MIN(strlen(volumeName), VOLUME_NAME_LENGTH));
 
