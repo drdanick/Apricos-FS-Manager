@@ -301,6 +301,7 @@ int newdiskCmd(char* fileName) {
         return 0;
     }
 
+    freeDiskData(diskData);
     return 1;
 }
 
