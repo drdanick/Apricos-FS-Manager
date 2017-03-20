@@ -452,7 +452,7 @@ int processLine(char* line) {
             saveFileCmd(entryName, fileName);
         }
     }
-    else if(strcmp("newdisk", strToLower(command)) == 0) {
+    else if(strcmp("newdisk", strToLower(command)) == 0 || strcmp("makedisk", strToLower(command)) == 0) {
         char* fileName = strtok(NULL, " \n");
         if(!fileName) {
             printf("Invalid filename\n");
