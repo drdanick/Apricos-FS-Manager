@@ -5,15 +5,17 @@
 #include "allocator.h"
 
 char* loadDataFromDiskFile(char* fileName) {
+    char* diskData;
+    long long bytesRead;
     FILE* diskFile = fopen(fileName, "rb");
 
     if(diskFile == NULL)
         return NULL;
 
-    char* diskData = createDiskData();
+    diskData = createDiskData();
+    bytesRead = fread(diskData, sizeof(char), DISK_SIZE, diskFile);
 
-    /* TODO: Return null if bytes read is less than expected*/
-    if(!fread(diskData, sizeof(char), DISK_SIZE, diskFile)){
+    if(!bytesRead || bytesRead != DISK_SIZE){
         if(diskFile)
             fclose(diskFile);
         free(diskData);
