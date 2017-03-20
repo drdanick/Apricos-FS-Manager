@@ -295,6 +295,15 @@ void saveFileCmd(char* entryName, char* fileName) {
     }
 }
 
+int newdiskCmd(char* fileName) {
+    char* diskData = createDiskData();
+    if(!diskData || !saveDiskFile(fileName, diskData)) {
+        return 0;
+    }
+
+    return 1;
+}
+
 int processLine(char* line) {
     char* command;
     command = strtok(line, " \n");
@@ -442,6 +451,17 @@ int processLine(char* line) {
         } else {
             saveFileCmd(entryName, fileName);
         }
+    }
+    else if(strcmp("newdisk", strToLower(command)) == 0) {
+        char* fileName = strtok(NULL, " \n");
+        if(!fileName) {
+            printf("Invalid filename\n");
+        } else if(!newdiskCmd(fileName)){
+            printf("Error creating new disk image\n");
+        } else {
+            printf("New disk image '%s' written\n", fileName);
+        }
+
     }
     else {
         printf("Unknown Command\n");

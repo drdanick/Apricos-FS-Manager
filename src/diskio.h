@@ -33,6 +33,14 @@
 char* loadDataFromDiskFile(char* fileName);
 
 /**
+ * Create a byte array the size of a disk image.
+ * The data is initialized to be all zero.
+ *
+ * Returns: A pointer to the aloocated disk image data.
+ */
+char* createDiskData();
+
+/**
  * Save disk image data to a file
  * 
  * fileName: The name/path of the file to save to.

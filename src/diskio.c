@@ -1,5 +1,6 @@
 #include <stdlib.h>
 #include <stdio.h>
+#include <string.h>
 #include "diskio.h"
 #include "allocator.h"
 
@@ -9,7 +10,7 @@ char* loadDataFromDiskFile(char* fileName) {
     if(diskFile == NULL)
         return NULL;
 
-    char* diskData = (char*)malloc(sizeof(char) * DISK_SIZE);
+    char* diskData = createDiskData();
 
     /* TODO: Return null if bytes read is less than expected*/
     if(!fread(diskData, sizeof(char), DISK_SIZE, diskFile)){
@@ -21,6 +22,16 @@ char* loadDataFromDiskFile(char* fileName) {
 
     fclose(diskFile);
     return diskData;
+}
+
+char* createDiskData() {
+    char* data = (char*)malloc(sizeof(char) * DISK_SIZE);
+
+    if(data) {
+        memset(data, '\0', DISK_SIZE);
+    }
+
+    return data;
 }
 
 int saveDiskFile(char* fileName, char* data) {
