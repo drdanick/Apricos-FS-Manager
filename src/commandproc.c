@@ -57,7 +57,7 @@ void mountCmd(char* args) {
 
     fs = mountFilesystem(args);
     if(fs == NULL) {
-        printf("Cannot load file \"%s\"\n", args);
+        printf("Cannot load file \"%s\" as disk image\n", args);
         return;
     }
 

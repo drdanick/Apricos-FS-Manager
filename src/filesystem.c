@@ -27,6 +27,12 @@ Filesystem* mountFilesystem(char* filePath) {
 
     resetDirectoryStack(fs);
 
+    /* validate the disk signature */
+    if(strncmp(fs->volumeInfo->diskSignature, diskSignature, DISK_SIGNATURE_SIZE) != 0) {
+        unmountFilesystem(fs, 0);
+        return NULL;
+    }
+
     return fs;
 }
 
