@@ -4,6 +4,7 @@
 #include <string.h>
 #include "apricosfsman.h"
 #include "commandproc.h"
+#include "diskio.h"
 
 unsigned long buffersize = INITIAL_INPUT_BUFFER_SIZE;
 char* inputbuff;
@@ -15,7 +16,7 @@ void cleanup() {
     free(inputbuff);
 
     if(globalFileSystem != NULL) {
-        printf("Unmounting without saving...\n");
+        printf("\nUnmounting without saving...\n");
         unmountFilesystem(globalFileSystem, 0);
     }
 }
@@ -27,9 +28,7 @@ void termhandler(int sig) {
     }
 }
 
-void init(int argc, char** argv) {
-    argc=argc; /* Satisfy compiler warnings until these are actually used */
-    argv=argv;
+void init() {
 
     signal(SIGINT, termhandler);
 
@@ -58,8 +57,9 @@ void inputLoop() {
             && processLine(inputbuff) != -1);
 }
 
-int main(int argc, char** argv) {
-    init(argc, argv);
+int main(void) {
+    printf("%lu\n", sizeof(VolumeInfo));
+    init();
 
     inputLoop();
 
