@@ -3,6 +3,8 @@
 
 #include <stdlib.h>
 #include <stdio.h>
+#include <unistd.h>
+#include <getopt.h>
 
 const struct option long_options[] = {
     {"version", no_argument, 0, 'v'},
@@ -54,7 +56,9 @@ Settings getSettingsFromArgs(int argc, char** argv) {
         }
     }
 
-    /* TODO: Set disk image if it's in the arg list */
+    if(optind < argc) {
+        s.diskImage = argv[optind];
+    }
 
     return s;
 }

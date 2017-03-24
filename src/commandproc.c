@@ -62,7 +62,7 @@ void mountCmd(char* args) {
     }
 
     globalFileSystem = fs;
-    printf("mounted!\n");
+    printf("%s mounted!\n", args);
 }
 
 void unmountCmd() {

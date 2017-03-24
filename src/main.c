@@ -36,7 +36,9 @@ void init(Settings settings) {
     inputbuff = (char*)malloc(sizeof(char) * buffersize);
 
     if(settings.diskImage) {
-        /* TODO: Mount the disk image */
+        /* TODO: Need to move mount logic into somewhere away from commandproc */
+        sprintf(inputbuff, "mount %s\n", settings.diskImage);
+        processLine(inputbuff);
     }
 }
 

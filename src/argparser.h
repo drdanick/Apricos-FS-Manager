@@ -1,9 +1,6 @@
 #ifndef ARGPARSER_H
 #define ARGPARSER_H
 
-#include <unistd.h>
-#include <getopt.h>
-
 typedef struct {
     char* diskImage;
 } Settings;
