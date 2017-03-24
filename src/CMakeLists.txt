@@ -9,6 +9,7 @@ set (apricosfsman
     allocator.c
     fsdirectory.c
     fsfile.c
+    argparser.c
     )
 
 add_executable (${PROJECT_NAME} ${apricosfsman})

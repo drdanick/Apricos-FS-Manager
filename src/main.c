@@ -5,6 +5,7 @@
 #include "apricosfsman.h"
 #include "commandproc.h"
 #include "diskio.h"
+#include "argparser.h"
 
 unsigned long buffersize = INITIAL_INPUT_BUFFER_SIZE;
 char* inputbuff;
@@ -28,11 +29,15 @@ void termhandler(int sig) {
     }
 }
 
-void init() {
+void init(Settings settings) {
 
     signal(SIGINT, termhandler);
 
     inputbuff = (char*)malloc(sizeof(char) * buffersize);
+
+    if(settings.diskImage) {
+        /* TODO: Mount the disk image */
+    }
 }
 
 void printPrompt() {
@@ -57,9 +62,9 @@ void inputLoop() {
             && processLine(inputbuff) != -1);
 }
 
-int main(void) {
-    printf("%lu\n", sizeof(VolumeInfo));
-    init();
+int main(int argc, char** argv) {
+    Settings settings = getSettingsFromArgs(argc, argv);
+    init(settings);
 
     inputLoop();
 

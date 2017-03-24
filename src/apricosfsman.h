@@ -3,6 +3,10 @@
 
 #include "filesystem.h"
 
+#ifndef VERSION
+#define VERSION "UNKNOWN"
+#endif
+
 /* misc. macros */
 
 #define MIN(a, b) ((a < b) ? a : b)
