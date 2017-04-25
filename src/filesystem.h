@@ -109,6 +109,7 @@ extern const char diskSignature[];
  */
 
 Filesystem* mountFilesystem(char* filePath);
+void syncFilesystem(Filesystem* fs);
 void unmountFilesystem(Filesystem* fs, char save);
 void resetDirectoryStack(Filesystem* fs);
 void clearDirectoryStack(Filesystem* fs);

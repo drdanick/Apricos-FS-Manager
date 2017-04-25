@@ -33,7 +33,7 @@ void printStatus() {
     getcwd(cwd, sizeof(cwd));
 
     printf("Program status:\n");
-    printf("\tWorking Directory: %s\n", cwd);
+    printf("\tHost Working Directory: %s\n", cwd);
     printf("\tDisk Image mounted: %s\n", globalFileSystem == NULL ? "None" : globalFileSystem->diskImagePath);
 
     if(globalFileSystem) {
@@ -63,6 +63,17 @@ void mountCmd(char* args) {
 
     globalFileSystem = fs;
     printf("%s mounted!\n", args);
+}
+
+void syncCmd() {
+    if(globalFileSystem == NULL) {
+        printf("No FileSystem mounted!\n");
+        return;
+    }
+
+    syncFilesystem(globalFileSystem);
+
+    printf("Data flushed to disk\n");
 }
 
 void unmountCmd() {
@@ -333,6 +344,9 @@ int processLine(char* line) {
     }
     else if(strcmp("mount", strToLower(command)) == 0) {
         mountCmd(strtok(NULL, " \n"));
+    }
+    else if(strcmp("sync", strToLower(command)) == 0) {
+        syncCmd();
     }
     else if(strcmp("unmount", strToLower(command)) == 0) {
         unmountCmd();

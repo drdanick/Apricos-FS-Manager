@@ -36,6 +36,10 @@ Filesystem* mountFilesystem(char* filePath) {
     return fs;
 }
 
+void syncFilesystem(Filesystem* fs) {
+    saveDiskFile(fs->diskImagePath, fs->diskData);
+}
+
 void unmountFilesystem(Filesystem* fs, char save) {
     if(save)
         saveDiskFile(fs->diskImagePath, fs->diskData);
